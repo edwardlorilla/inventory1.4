@@ -55,6 +55,13 @@
                                 {!! Form::label('name', 'Name') !!}
                                 {!! Form::select('name', $users, null,  ['class'=>'form-control'])!!}
                         </div>
+
+                        <div class="form-group">
+                            {!! Form::label('test', ucfirst('test:')) !!}
+                            {!! Form::text('test', null, ['class'=>'form-control']) !!}
+                        </div>
+
+
                         <div class="form-group">
                             <div id="userquerytable-container"></div>
                         </div>
@@ -368,7 +375,7 @@
                     table.append(tr);
                     //loop through cols for each row...
                     for(var c=0; c < data.Cols.length; c++){
-                        tr.append('<td><span class="inline-edit">'+data.Rows[r][c]+'</span></td>');
+                        tr.append('<td><input class="form-control" name="test" id="test" type="text" value="'+data.Rows[r][c]+'"></td>');
                     }
                 }
 

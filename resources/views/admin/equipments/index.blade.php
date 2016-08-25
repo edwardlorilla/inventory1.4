@@ -5,8 +5,9 @@
 @endsection
 @section('contentheader_title', 'All equipments')
 @section('css')
-
+    {!! Html::style('css/parsley.min.css') !!}
     {!! Html::style('css/jquery.dataTables.min.css') !!}
+    {!! Html::style('css/bootstrap-spinner.css') !!}
     <style>
 
         .example-modal .modal {
@@ -36,7 +37,7 @@
     {{--<input type="submit"  name="sendNewSms" class="inputButton"  id="sendNewSms" value=" Send " />--}}
 
 
-   @include('partial.errorModal')
+    @include('partial.errorModal')
 
     <div class="modal fade example-modal" id="borrow" role="dialog">
         <div class="modal">
@@ -45,23 +46,16 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><span class="inline-edit">Equipment Borrows</span> </h4>
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><span class="inline-edit">Equipment Borrows</span></h4>
                     </div>
                     <div class="modal-body">
                         {!! Form::open(['id'=>'delete_form', 'method'=>'post']) !!}
 
                         <div class="form-group has-feedback">
-                                {!! Form::label('name', 'Name') !!}
-                                {!! Form::select('name', $users, null,  ['class'=>'form-control'])!!}
+                            {!! Form::label('name', 'Name') !!}
+                            {!! Form::select('name', $users, null,  ['class'=>'form-control'])!!}
                         </div>
-
-                        <div class="form-group">
-                            {!! Form::label('test', ucfirst('test:')) !!}
-                            {!! Form::text('test', null, ['class'=>'form-control']) !!}
-                        </div>
-
-
                         <div class="form-group">
                             <div id="userquerytable-container"></div>
                         </div>
@@ -91,7 +85,7 @@
                             {!! Form::open(['id'=>'delete_form', 'method'=>'delete']) !!}
                             <div class="col-sm-offset-2 col-sm-6">
 
-                               {!! Form::hidden('no', '', ['class' => 'form-control', 'id' =>'deleteExample' ]) !!}
+                                {!! Form::hidden('no', '', ['class' => 'form-control', 'id' =>'deleteExample' ]) !!}
                             </div>
 
                         </div>
@@ -115,7 +109,6 @@
     <div class="box box-success" id="ValidateCheckBox">
 
 
-
         <div class="box-header">
             <h3 class="box-title">equipments</h3>
         </div><!-- /.box-header -->
@@ -123,17 +116,18 @@
             <div id="grpChkBox">
                 <div class="btn-group" style="margin-bottom: 20px;">
 
-                    <button name="sendNewSms"  class="btn bg-olive btn-flat " id="sendNewSms" type="submit"
-                            onClick="ValidateCheckBox();" >Borrow
+                    <button name="sendNewSms" class="btn bg-olive btn-flat " id="sendNewSms" type="submit"
+                            onClick="ValidateCheckBox();">Borrow
                     </button>
                     <a href="{{route('admin.equipment.create')}}" class="btn btn-primary btn-flat"><span
                                 class="glyphicon glyphicon-plus"></span> Create</a>
 
-                    <button name="sendNewSms"  class="btn btn-danger btn-flat    " id="sendNewSms2" type="submit"
+                    <button name="sendNewSms" class="btn btn-danger btn-flat    " id="sendNewSms2" type="submit"
                             onClick="deleteModal();">Delete
                     </button>
                     <div class="btn-group pull-right">
-                        <button type="button" class="btn bg-navy btn-flat" data-toggle="dropdown" aria-expanded="false">Export
+                        <button type="button" class="btn bg-navy btn-flat" data-toggle="dropdown" aria-expanded="false">
+                            Export
                             to <span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>
                         <ul class="dropdown-menu" role="menu">
                             <li><a onclick="exportTo('csv');" href="javascript://">CSV</a></li>
@@ -145,8 +139,9 @@
                 </div>
 
                 <div class="btn-group  pull-right">
-                    <button type="button" class="btn bg-purple btn-flat dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button>
-                    <ul  class="dropdown-menu" role="menu">
+                    <button type="button" class="btn bg-purple btn-flat dropdown-toggle" data-toggle="dropdown"><span
+                                class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
                         <li style="margin-left: 10px;"><p><input type="checkbox" name="no"/> ID</p></li>
                         <li style="margin-left: 10px;"><p><input type="checkbox" name="add"/> Added by</p></li>
                         <li style="margin-left: 10px;"><p><input type="checkbox" name="cat"/> Categories</p></li>
@@ -159,7 +154,6 @@
                     </ul>
                 </div>
             </div>
-
 
 
             <table id="firm_table" class="table table-bordered table-striped">
@@ -183,15 +177,24 @@
 
                     @foreach( $equipments as $equipment)
                         <tr>
-                            <td><input type="checkbox" id="{{$equipment->nonconsumable->quantity}}" class="CheckBoxClassName" name="borrows[]" value="{{$equipment->id}}" form="delete_form"></td>
-                            <td><span class="inline-edit">{{$equipment->id}}</span> </td>
-                            <td><a href="{{route('admin.equipment.edit',$equipment->id)}}">{{$equipment->user_id == 0 ? 'no user' : $equipment->user->name}}</a></td>
+                            <td><input type="checkbox" id="{{$equipment->nonconsumable->quantity}}"
+                                       class="CheckBoxClassName" name="borrows[]" value="{{$equipment->id}}"
+                                       form="delete_form"></td>
+                            <td><span class="inline-edit">{{$equipment->id}}</span></td>
+                            <td>
+                                <a href="{{route('admin.equipment.edit',$equipment->id)}}">{{$equipment->user_id == 0 ? 'no user' : $equipment->user->name}}</a>
+                            </td>
                             <td>{{$equipment->category ? $equipment->category->name : "Uncatalogued"}}</td>
-                            <td><img height="50px" src="{{ $equipment->photo ? $equipment->photo->file :'http://lorempixel.com/50/50'}}" alt=""></td>
-                            <td><a href="{{route('admin.equipment.edit', $equipment->id)}}">{{$equipment->item}}</a></td>
-                            <td class="quantity" >{{$equipment->nonconsumable->quantity}}</td>
+                            <td><img height="50px"
+                                     src="{{ $equipment->photo ? $equipment->photo->file :'http://lorempixel.com/50/50'}}"
+                                     alt=""></td>
+                            <td><a href="{{route('admin.equipment.edit', $equipment->id)}}">{{$equipment->item}}</a>
+                            </td>
+                            <td class="quantity">{{$equipment->nonconsumable->quantity}}</td>
                             <td>{{$equipment->description}}</td>
-                            <td><span class="label label-{{$equipment->status==1 ? 'success':'default'}}">{{$equipment->status ? 'Available' : 'Borrowed'}}</span></td>
+                            <td>
+                                <span class="label label-{{$equipment->status==1 ? 'success':'default'}}">{{$equipment->status ? 'Available' : 'Borrowed'}}</span>
+                            </td>
                             <td>{{$equipment->created_at->diffForHumans()}}</td>
                             <td>{{$equipment->updated_at->diffForHumans()}}</td>
                         </tr>
@@ -219,9 +222,8 @@
     {!! Html::script('js/jquery.inline-edit.js') !!}
     {!! Html::script('js/jquery.js') !!}
     {!! Html::script('js/jquery.slimscroll.min.js') !!}
-    {!! Html::script('js/numeric-input-example.js') !!}
-    {!! Html::script('js/mindmup-editabletable.js') !!}
-
+    {!! Html::script('js/parsley.min.js') !!}
+    {!! Html::script('js/jquery.spinner.js.js') !!}
 
 
     <script>
@@ -234,7 +236,6 @@
             $('#firm_table').DataTable({
                 "pagingType": "full_numbers"
             });
-
 
 
         });
@@ -257,13 +258,11 @@
                 var maxAllowed = 0;
                 var cnt = $("input[class='CheckBoxClassName']:checked").length;
 
-                if (cnt == maxAllowed)
-
-                {
+                if (cnt == maxAllowed) {
                     button2.attr('disabled', 'disabled');
                     button.attr('disabled', 'disabled');
 
-                }else {
+                } else {
                     button.removeAttr('disabled');
                     button2.removeAttr('disabled');
                 }
@@ -280,7 +279,17 @@
                 var index = $(colToHide).index();
                 $tbl.find('tr :nth-child(' + (index + 1) + ')').toggle();
             });
-
+            $("#quantity").keydown(function (e) {
+                if ((e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                        (e.keyCode >= 35 && e.keyCode <= 40) ||
+                        $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1) {
+                    return;
+                }
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) &&
+                        (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
 
 
         });
@@ -316,8 +325,6 @@
         function ValidateCheckBox() {
 
 
-
-
             $('#ValidateCheckBox').find("input:checkbox.CheckBoxClassName:checked").each(function (i, selected) {
                 if (selectedCheckBoxesValue.length == 0) {
                     selectedCheckBoxesValue += $(selected).val();
@@ -345,48 +352,51 @@
 
                 var chkArray = [];
                 var data;
-                $("input[name='borrows[]']:checked").map(function() {
+                $("input[name='borrows[]']:checked").map(function () {
 
-                       chkArray.push([($(this).closest("tr").find("td:eq(5)").text()), $(this).closest("tr").find("td:eq(6)").text()]);
-
-
-
-                    var colData = ["contactid", "fullname"];
-
-                    data ={"Cols":colData, "Rows":chkArray};
+                    chkArray.push([($(this).closest("tr").find("td:eq(5)").text()), $(this).closest("tr").find("td:eq(6)").text()]);
 
 
+                    var colData = ["Item", "Quantity"];
 
-                    }).get();
+                    data = {"Cols": colData, "Rows": chkArray};
+
+
+                }).get();
                 var table = $('<table/>').attr("id", "userquerytable").addClass("display").attr("cellspacing", "0").attr("width", "100%");
-
-
 
 
                 var tr = $('<tr/>');
                 table.append('<thead>').children('thead').append(tr);
 
-                for (var i=0; i< data.Cols.length; i++) {
-                    tr.append('<td><span class="inline-edit">'+data.Cols[i]+'</span></td>');
+                for (var i = 0; i < data.Cols.length; i++) {
+
+                    tr.append('<th><span class="inline-edit">' + data.Cols[i] + '</span></th>');
+
                 }
 
-                for(var r=0; r < data.Rows.length; r++){
+                for (var r = 0; r < data.Rows.length; r++) {
                     var tr = $('<tr/>');
                     table.append(tr);
                     //loop through cols for each row...
-                    for(var c=0; c < data.Cols.length; c++){
-                        tr.append('<td><input class="form-control" name="test" id="test" type="text" value="'+data.Rows[r][c]+'"></td>');
+
+                    for (var c = 0; c < data.Cols.length; c++) {
+                        if (c % 2 == 0) {
+//                            alert('even');
+                            tr.append('<td>' + data.Rows[r][c] + '</td>');
+                        } else {
+//                            alert('odd');
+                            tr.append('<td><input type="number" max="' + data.Rows[r][c] + '" required="" name="quantity[]" id="quantity" value="1"></td><input type="hidden" name="originalQuantity[]" id="originalQuantity" value="' + data.Rows[r][c] + '" >');
+
+
+
+                        }
+//
                     }
                 }
 
 
-
-
-
-
-
-
-                if ( $.fn.dataTable.isDataTable( '#userquerytable' ) ) {
+                if ($.fn.dataTable.isDataTable('#userquerytable')) {
                     $('#userquerytable').DataTable();
                 }
                 else {
@@ -394,25 +404,21 @@
                     $('#userquerytable').DataTable().destroy();
 
                     $('#userquerytable-container').append(table);
-                    $('#userquerytable').DataTable( {
+                    $('#userquerytable').DataTable({
 //                        retrieve: true,
 //                        destroy: true
                         "pagingType": "full_numbers"
-                    } );
+                    });
                 }
 
-                $('#userquerytable').editableTableWidget().numericInputExample().find('td:first').focus();
-                $('#textAreaEditor').editableTableWidget({editor: $('<textarea>')});
-                window.prettyPrint && prettyPrint();
-
-
+//                $('table td:nth-child(2)').css( "color", "red" );
                 $("#borrow").modal('show');
             }
 
 
         }
 
-        function deleteModal(){
+        function deleteModal() {
 
             $('#ValidateCheckBox').find("input:checkbox.CheckBoxClassName:checked").each(function (i, selected) {
                 if (selectedCheckBoxesValue.length == 0) {
@@ -429,7 +435,7 @@
                 $("#error").modal();
             } else {
                 var chkArray = [];
-                $("input[name='borrows[]']:checked").map(function() {
+                $("input[name='borrows[]']:checked").map(function () {
                     chkArray.push(this.value);
                 }).get();
                 var selected;

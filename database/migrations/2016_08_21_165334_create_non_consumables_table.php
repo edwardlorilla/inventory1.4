@@ -14,7 +14,9 @@ class CreateNonConsumablesTable extends Migration
     {
         Schema::create('non_consumables', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('item');
             $table->integer('quantity');
+            $table->boolean('status');
             $table->timestamps();
         });
     }

@@ -8,6 +8,8 @@
     {!! Html::style('css/parsley.min.css') !!}
     {!! Html::style('css/jquery.dataTables.min.css') !!}
     {!! Html::style('css/bootstrap-spinner.css') !!}
+    {!! Html::style('css/buttons.dataTables.min.css') !!}
+
     <style>
 
         .example-modal .modal {
@@ -125,17 +127,6 @@
                     <button name="sendNewSms" class="btn btn-danger btn-flat    " id="sendNewSms2" type="submit"
                             onClick="deleteModal();">Delete
                     </button>
-                    <div class="btn-group pull-right">
-                        <button type="button" class="btn bg-navy btn-flat" data-toggle="dropdown" aria-expanded="false">
-                            Export
-                            to <span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a onclick="exportTo('csv');" href="javascript://">CSV</a></li>
-                            <li><a onclick="exportTo('txt');" href="javascript://">TXT</a></li>
-                            <li><a onclick="exportTo('xls');" href="javascript://">XLS</a></li>
-                            <li><a onclick="exportTo('sql');" href="javascript://">SQL</a></li>
-                        </ul>
-                    </div>
                 </div>
 
                 <div class="btn-group  pull-right">
@@ -177,9 +168,12 @@
 
                     @foreach( $equipments as $equipment)
                         <tr>
-                            <td><input type="checkbox" id="{{$equipment->nonconsumable->quantity}}"
+                            <td><input type="checkbox"
                                        class="CheckBoxClassName" name="borrows[]" value="{{$equipment->id}}"
-                                       form="delete_form"></td>
+                                       form="delete_form"
+
+                                        {{$equipment->nonconsumable->quantity==0 ? 'disabled' : ''}}
+                                ></td>
                             <td><span class="inline-edit">{{$equipment->id}}</span></td>
                             <td>
                                 <a href="{{route('admin.equipment.edit',$equipment->id)}}">{{$equipment->user_id == 0 ? 'no user' : $equipment->user->name}}</a>
@@ -188,9 +182,9 @@
                             <td><img height="50px"
                                      src="{{ $equipment->photo ? $equipment->photo->file :'http://lorempixel.com/50/50'}}"
                                      alt=""></td>
-                            <td><a href="{{route('admin.equipment.edit', $equipment->id)}}">{{$equipment->item}}</a>
+                            <td><a href="{{route('admin.equipment.edit', $equipment->id)}}"><strong>{{$equipment->item}}</strong></a>
                             </td>
-                            <td class="quantity">{{$equipment->nonconsumable->quantity}}</td>
+                            <td class="quantity" style="{{$equipment->nonconsumable->quantity <= 1 ? 'color: #9f191f' : ''}}">{{$equipment->nonconsumable->quantity >=1 ?$equipment->nonconsumable->quantity : 'Out of stock'}}</td>
                             <td>{{$equipment->description}}</td>
                             <td>
                                 <span class="label label-{{$equipment->status==1 ? 'success':'default'}}">{{$equipment->status ? 'Available' : 'Borrowed'}}</span>
@@ -218,14 +212,21 @@
     {!! Html::script('plugins/fastclick/fastclick.min.js') !!}
     {!! Html::script('js/dataTables.bootstrap.min.js') !!}
     {!! Html::script('js/jquery.dataTables.min.js') !!}
-    {!! Html::script('js/tableExporter.js') !!}
     {!! Html::script('js/jquery.inline-edit.js') !!}
     {!! Html::script('js/jquery.js') !!}
     {!! Html::script('js/jquery.slimscroll.min.js') !!}
     {!! Html::script('js/parsley.min.js') !!}
     {!! Html::script('js/jquery.spinner.js.js') !!}
-
-
+    {!! Html::script('js/dataTables.buttons.min.js') !!}
+    {!! Html::script('js/jszip.min.js') !!}
+    {!! Html::script('js/pdfmake.min.js') !!}
+    {!! Html::script('js/vfs_fonts.js') !!}
+    {!! Html::script('js/buttons.html5.min.js') !!}
+    {!! Html::script('js/dataTables.buttons.min.js') !!}
+    {!! Html::script('js/jszip.min.js') !!}
+    {!! Html::script('js/pdfmake.min.js') !!}
+    {!! Html::script('js/vfs_fonts.js') !!}
+    {!! Html::script('js/buttons.html5.min.js') !!}
     <script>
         var editor;
 
@@ -233,9 +234,29 @@
         $('table').tableCheckbox({/* options */});
 
         $(function () {
-            $('#firm_table').DataTable({
-                "pagingType": "full_numbers"
-            });
+            var tdate = new Date();
+            var dd = tdate.getDate(); //yields day
+            var MM = tdate.getMonth(); //yields month
+            var yyyy = tdate.getFullYear(); //yields year
+            var d = dd + "-" +( MM+1) + "-" + yyyy;
+            $('#firm_table').DataTable( {
+                dom: 'Bfrtip',
+                buttons: [
+
+                    'copyHtml5',
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        title: d+ ' Equipment',
+                        customize: function( xlsx ) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            $('row:first c', sheet).attr( 's', '42' );
+                        }
+                    },
+                    'csvHtml5',
+                    'pdfHtml5'
+                ]
+            } );
 
 
         });
@@ -255,8 +276,11 @@
 
             $("input[class='CheckBoxClassName']").change(function () {
 
+
                 var maxAllowed = 0;
                 var cnt = $("input[class='CheckBoxClassName']:checked").length;
+
+
 
                 if (cnt == maxAllowed) {
                     button2.attr('disabled', 'disabled');
@@ -354,15 +378,14 @@
                 var data;
                 $("input[name='borrows[]']:checked").map(function () {
 
-                    chkArray.push([($(this).closest("tr").find("td:eq(5)").text()), $(this).closest("tr").find("td:eq(6)").text()]);
-
-
+                    chkArray.push([$(this).closest("tr").find("td:eq(5)").text(), $(this).closest("tr").find("td:eq(6)").text()]);
                     var colData = ["Item", "Quantity"];
 
                     data = {"Cols": colData, "Rows": chkArray};
 
 
                 }).get();
+
                 var table = $('<table/>').attr("id", "userquerytable").addClass("display").attr("cellspacing", "0").attr("width", "100%");
 
 
@@ -370,23 +393,20 @@
                 table.append('<thead>').children('thead').append(tr);
 
                 for (var i = 0; i < data.Cols.length; i++) {
-
                     tr.append('<th><span class="inline-edit">' + data.Cols[i] + '</span></th>');
-
                 }
-
                 for (var r = 0; r < data.Rows.length; r++) {
                     var tr = $('<tr/>');
                     table.append(tr);
                     //loop through cols for each row...
-
                     for (var c = 0; c < data.Cols.length; c++) {
                         if (c % 2 == 0) {
-//                            alert('even');
+//                            alert('even')
+// ;
                             tr.append('<td>' + data.Rows[r][c] + '</td>');
                         } else {
 //                            alert('odd');
-                            tr.append('<td><input type="number" max="' + data.Rows[r][c] + '" required="" name="quantity[]" id="quantity" value="1"></td><input type="hidden" name="originalQuantity[]" id="originalQuantity" value="' + data.Rows[r][c] + '" >');
+                            tr.append('<td><input type="number" min="1" max="' + data.Rows[r][c] + '" required="" name="quantity[]" id="quantity" value="1"></td><input type="hidden" name="originalQuantity[]" id="originalQuantity" value="' + data.Rows[r][c] + '" >');
 
 
 
@@ -446,11 +466,6 @@
             }
         }
 
-        $('.table').tableExport({
-            filename: 'table_%DD%-%MM%-%YY%',
-            format: type,
-            cols: '3,4,6,7,8,9,10'
-        });
 
 
     </script>

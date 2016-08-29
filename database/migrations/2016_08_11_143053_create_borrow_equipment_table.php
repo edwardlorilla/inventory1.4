@@ -18,7 +18,6 @@ class CreateBorrowEquipmentTable extends Migration
             $table->foreign('borrow_id')->references('id')->on('borrows')->onDelete('cascade');
             $table->integer('equipment_id')->unsigned()->index();
             $table->foreign('equipment_id')->references('id')->on('equipment')->onDelete('cascade');
-
             $table->timestamps();
         });
     }

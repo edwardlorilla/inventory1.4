@@ -11,6 +11,9 @@ class Equipment extends Model
     {
         return $this->belongsToMany('App\Borrow');
     }
+    
+    
+    
     public function user(){
         return $this->belongsTo('App\User');
     }

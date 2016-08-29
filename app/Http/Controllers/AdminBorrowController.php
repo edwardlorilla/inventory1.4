@@ -44,7 +44,7 @@ class AdminBorrowController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request);
+        dd($request);
         foreach ($request->return as $id) {
             $borrow = Borrow::find($id);
             foreach ($borrow->equipments as $equipment) {

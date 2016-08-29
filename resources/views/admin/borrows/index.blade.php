@@ -6,11 +6,13 @@
 @section('contentheader_title', 'All borrows')
 @section('css')
     {!! Html::style('css/jquery.dataTables.min.css') !!}
+    {!! Html::style('css/buttons.dataTables.min.css') !!}
 @endsection
 
 @section('main-content')
 
     @include('partial.errorModal')
+
     <div class="modal fade" id="return">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -43,30 +45,33 @@
         <div class="box-body">
             <div class="btn-group" style="margin-bottom: 20px">
 
-                <button name="sendNewSms"  class="btn bg-primary btn-flat " id="sendNewSms" type="submit"
-                        onClick="ValidateCheckBox();" >Return
+                <button name="sendNewSms" class="btn bg-primary btn-flat " id="sendNewSms" type="submit"
+                        onClick="ValidateCheckBox();">Return
                 </button>
 
-                <button type="button" class="btn bg-navy btn-flat" data-toggle="dropdown" aria-expanded="false">Export
-                    to <span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a onclick="exportTo('csv');" href="javascript://">CSV</a></li>
-                    <li><a onclick="exportTo('txt');" href="javascript://">TXT</a></li>
-                    <li><a onclick="exportTo('xls');" href="javascript://">XLS</a></li>
-                    <li><a onclick="exportTo('sql');" href="javascript://">SQL</a></li>
-                </ul>
+                {{--<button type="button" class="btn bg-navy btn-flat" data-toggle="dropdown" aria-expanded="false">Export--}}
+                {{--to <span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>--}}
+                {{--<ul class="dropdown-menu" role="menu">--}}
+                {{--<li><a onclick="exportTo('csv');" href="javascript://">CSV</a></li>--}}
+                {{--<li><a onclick="exportTo('txt');" href="javascript://">TXT</a></li>--}}
+                {{--<li><a onclick="exportTo('xls');" href="javascript://">XLS</a></li>--}}
+                {{--<li><a onclick="exportTo('sql');" href="javascript://">SQL</a></li>--}}
+                {{--</ul>--}}
             </div>
 
 
             <table id="firm_table" class="table table-bordered table-striped">
                 <thead>
                 <tr>
+
                     <th class="nosort"><input type="checkbox" id="checkAll"></th>
+
                     <th class="nosort">ID</th>
                     <th>Approved by</th>
                     <th>Borrowed by</th>
                     <th>Email</th>
                     <th>Equipment borrowed</th>
+                    <th>Equipment Quantity</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -74,16 +79,28 @@
 
                     @foreach( $borrows as $borrow)
                         <tr>
-                            <td><input  type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]"
+                            {{--<td class="details-control"></td>--}}
+                            <td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]"
                                        value="{{$borrow->id}}" form="delete_form"></td>
                             <td>{{$borrow->id}}</td>
                             <td>{{$borrow->user->name}}</td>
                             <td><strong>{{$borrow->name}}</strong></td>
-                            <td><a href="#" class="button-email" title="{{$borrow->description}}">{{$borrow->description}}</a></td>
-                            <td>@foreach($borrow->equipments as $equipment)<span class="label label-default" value="{{$equipment->item}}">{{$equipment->item}}</span>@endforeach
+                            {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
+
+                            <td><a href="#" class="button-email"
+                                   title="{{$borrow->description}}">{{$borrow->description}}</a></td>
+
+                            <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)
+                                    <span class="label label-default"
+                                          value="{{$equipment->item}}">{{$equipment->item}}</span>@endforeach
                             </td>
+                            <td {{$borrow->id}}>@foreach($borrow->nonconsumables as $nonconsumables)<span class="label label-default"
+                                                                                                          value="{{$nonconsumables->quantity}}">{{$nonconsumables->quantity}}</span>@endforeach
+                            </td>
+
                             {{--<td>{{$borrow->updated_at->diffForHumans()}}</td>--}}
                         </tr>
+
                     @endforeach
 
                 @endif
@@ -101,25 +118,29 @@
     {!! Html::script('js/dataTables.bootstrap.min.js') !!}
     {!! Html::script('js/jquery.dataTables.min.js') !!}
     {!! Html::script('js/tableExporter.js') !!}
-
-{!! Html::script('js/jquery.js') !!}
+    {!! Html::script('js/dataTables.buttons.min.js') !!}
+    {!! Html::script('js/jszip.min.js') !!}
+    {!! Html::script('js/pdfmake.min.js') !!}
+    {!! Html::script('js/vfs_fonts.js') !!}
+    {!! Html::script('js/buttons.html5.min.js') !!}
+    {!! Html::script('js/jquery.js') !!}
     {!! Html::script('js/jquery.slimscroll.min.js') !!}
 
     <script>
         $('table').tableCheckbox({/* options */});
-        function exportTo(type) {
+        //        function exportTo(type) {
+        //
+        //            $('.table').tableExport({
+        //                filename: 'table_%DD%-%MM%-%YY%',
+        //                format: type,
+        //                cols: '3,4,5,6'
+        //            });
+        //
+        //        }
 
-            $('.table').tableExport({
-                filename: 'table_%DD%-%MM%-%YY%',
-                format: type,
-                cols: '3,4,5,6'
-            });
 
-        }
         var selectedCheckBoxesValue = '';
         function ValidateCheckBox() {
-
-
 
 
             $('#ValidateCheckBox').find("input:checkbox.CheckBoxClassName:checked").each(function (i, selected) {
@@ -145,12 +166,33 @@
             }
 
 
+
         }
+
+                {{--{{json_encode($borrow->nonconsumables()->getRelatedIds())}}--}}
+                {{--{{json_encode($borrow->equipments()->getRelatedIds())}}--}}
+
+
         $(function () {
-            $('#firm_table').DataTable({
-                "pagingType": "full_numbers"
-            });
-            var button = $('#sendNewSms');
+
+            $('#firm_table').DataTable( {
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ]
+            } );
+
+
+
+
+
+
+
+
+                var button = $('#sendNewSms');
             button.attr('disabled', 'disabled');
 
             $("input[id='checkbox']").change(function () {

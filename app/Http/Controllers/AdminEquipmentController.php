@@ -36,7 +36,7 @@ class AdminEquipmentController extends Controller
         $equipments = Equipment::all()->where('status', 1);
 
         $equipmentdrop = Equipment::lists('item', 'id')->all();
-        
+
         return view('admin.equipments.index', compact('equipments', 'equipmentdrop', 'borrows', 'borrow', 'borrows2', 'users'));
 
     }
@@ -60,7 +60,7 @@ class AdminEquipmentController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
+//        dd($request);
         if (User::find($request->input('name'))) {
             $users = User::find($request->input('name'));
 
@@ -70,13 +70,42 @@ class AdminEquipmentController extends Controller
                 'user_id' => Auth::user()->id,
             ]);
 
-            foreach ($request->borrows as $id) {
-                Equipment::where('id', $id)->update(['status' => 0]);
+            foreach ($request->originalQuantity as $key => $value) {
+                if (array_key_exists($key, $request->quantity) && array_key_exists($key, $request->originalQuantity) && array_key_exists($key, $request->borrows))
+                    $item = NonConsumable::create(['quantity' => ($request->quantity[$key]), 'item' => $request->borrows[$key], 'status' => 0]);
+                $quantityBorrow = NonConsumable::create(['quantity' => $request->quantity[$key], 'item' => $request->borrows[$key], 'status' => 1]);
+                $itemid = $item->id;
+                $quantityBorrowId[] = $quantityBorrow->id;
+
+//                dd($request->originalQuantity[$key] - $request->quantity[$key]);
+
+                if (!($request->originalQuantity[$key] - $request->quantity[$key]) == 0) {
+                    foreach ($request->borrows as $id) {
+                        Equipment::where('id', $id)->update(['status' => 1, 'nonconsumable_id' => $itemid]);
+                    }
+
+                }else{
+                    foreach ($request->borrows as $id) {
+                        Equipment::where('id', $id)->update(['status' => 0, 'nonconsumable_id' => $itemid]);
+                    }
+                    
+                }
+
+                foreach ($quantityBorrowId as $borrowId) {
+                    NonConsumable::where('id', $borrowId)->update(['status' => 1]);
+                }
+
             }
+
+//            $quantityBorrowId
+//                foreach ($request->borrows as $id) {
+//                    Equipment::where('id', $id)->update(['status' => 0]);
+//                }
 
 
             $borrow->save();
             $borrow->equipments()->sync($request->borrows, false);
+            $borrow->nonconsumables()->sync($quantityBorrowId, false);
             session()->flash('success', 'Borrowed successfully save!');
             return Redirect::route('admin.borrow.index');
         } else {
@@ -96,7 +125,7 @@ class AdminEquipmentController extends Controller
                 $photo = Photo::create(['file' => $name]);
                 $input['photo_id'] = $photo->id;
             }
-            if ($request->nonconsumable_id){
+            if ($request->nonconsumable_id) {
                 $quantity = $request->nonconsumable_id;
                 $nonconsumable = NonConsumable::create(['quantity' => $quantity]);
                 $input['nonconsumable_id'] = $nonconsumable->id;
@@ -162,7 +191,7 @@ class AdminEquipmentController extends Controller
      */
     public function destroy(Request $request, $id = null)
     {
-        //dd($request);
+
         if (is_null($id) == !$request->has('no')) {
             session()->flash('error', 'no record');
             return back();
@@ -177,7 +206,7 @@ class AdminEquipmentController extends Controller
             );
             foreach ($intArray as $id) {
                 $equipment = Equipment::findOrFail($id);
-                unlink(public_path() . $equipment->photo->file );
+                unlink(public_path() . $equipment->photo->file);
                 $equipment->delete();
             }
         } elseif (!is_null($id)) {

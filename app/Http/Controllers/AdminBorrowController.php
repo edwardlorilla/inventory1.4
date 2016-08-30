@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Borrow;
 use App\Equipment;
+use App\NonConsumable;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -20,6 +21,7 @@ class AdminBorrowController extends Controller
     {
         $this->middleware('auth');
     }
+
     public function index()
     {
         $borrows = Borrow::all();
@@ -33,38 +35,64 @@ class AdminBorrowController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        dd($request);
+//dd($request);
+
         foreach ($request->return as $id) {
             $borrow = Borrow::find($id);
             foreach ($borrow->equipments as $equipment) {
+                Equipment::where('id', $equipment->id)->update(['status' => 1]);
+            }
 
-                Equipment::where('id' , $equipment->id)->update(['status'=>1]);
+            dd($borrow->currentquantity);
+            foreach ($request->originalQuantity as $key => $value) {
+
+                if (array_key_exists($key, $request->quantity) && array_key_exists($key, $request->originalQuantity) && array_key_exists($key, $request->return))
+                    $item = NonConsumable::create(['quantity' => ($request->originalQuantity[$key] + $request->quantity[$key]), 'item' => $request->return[$key], 'status' => 0]);
+                $quantityBorrow = NonConsumable::create(['quantity' => $request->quantity[$key], 'item' => $request->return [$key], 'status' => 1]);
+                $itemid = $item->id;
+                $quantityBorrowId[] = $quantityBorrow->id;
+
+
+                if (!($request->originalQuantity[$key] - $request->quantity[$key]) == 0) {
+                    foreach ($request->return as $id) {
+                        Equipment::where('id', $id)->update(['status' => 1, 'nonconsumable_id' => $itemid]);
+                    }
+
+                } else {
+                    foreach ($request->return as $id) {
+                        Equipment::where('id', $id)->update(['status' => 0, 'nonconsumable_id' => $itemid]);
+                    }
+
+                }
+
+                foreach ($quantityBorrowId as $borrowId) {
+                    NonConsumable::where('id', $borrowId)->update(['status' => 1]);
+                }
+
+            }
+
+            if ($request->originalQuantity == $request->quantity) {
+                Borrow::destroy($request->return);
             }
         }
-//        dd($request);
-//        foreach ($request->return as $id)
-//        {
-//            ::->update(['Status'=>0]);
-//        }
-        Borrow::destroy($request->return);
         return Redirect::route('admin.equipment.index');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -75,7 +103,7 @@ class AdminBorrowController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -86,8 +114,8 @@ class AdminBorrowController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -98,28 +126,27 @@ class AdminBorrowController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
 
 
     public function confirm($id)
     {
-        
+
     }
-    
-    
-    public function destroy(Request $request,$id = null)
+
+
+    public function destroy(Request $request, $id = null)
     {
         if (is_null($id) == !$request->has('delete')) {
             session()->flash('error', 'no record');
             return back();
-        }elseif(is_null($id) == $request->has('delete')){
-            foreach ($request->delete as $id)
-            {
+        } elseif (is_null($id) == $request->has('delete')) {
+            foreach ($request->delete as $id) {
                 Borrow::findOrFail($id)->delete();
             }
-        }elseif (!is_null($id)){
+        } elseif (!is_null($id)) {
 
             session()->flash('success', 'Successfully Deleted');
         }

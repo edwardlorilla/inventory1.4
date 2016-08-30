@@ -25,7 +25,9 @@
                 <div class="modal-body">
                     {!! Form::open(['id'=>'delete_form' , 'method'=>'POST',]) !!}
 
-
+                    <div class="form-group">
+                        <div id="userquerytable-container"></div>
+                    </div>
                     {{--{!! Form::select('borrows', $borrowdrop , null , ['class' => 'select2-multi form-control', 'multiple'=>'multiple']) !!}--}}
 
 
@@ -80,8 +82,13 @@
                     @foreach( $borrows as $borrow)
                         <tr>
                             {{--<td class="details-control"></td>--}}
-                            <td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]"
-                                       value="{{$borrow->id}}" form="delete_form"></td>
+                            <td>
+                                <input type="checkbox"
+                                       id="checkbox"
+                                       class="checkboxs CheckBoxClassName"
+                                       name="return[]"
+                                       value="{{$borrow->id}}" form="delete_form">
+                            </td>
                             <td>{{$borrow->id}}</td>
                             <td>{{$borrow->user->name}}</td>
                             <td><strong>{{$borrow->name}}</strong></td>
@@ -90,13 +97,8 @@
                             <td><a href="#" class="button-email"
                                    title="{{$borrow->description}}">{{$borrow->description}}</a></td>
 
-                            <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)
-                                    <span class="label label-default"
-                                          value="{{$equipment->item}}">{{$equipment->item}}</span>@endforeach
-                            </td>
-                            <td {{$borrow->id}}>@foreach($borrow->nonconsumables as $nonconsumables)<span class="label label-default"
-                                                                                                          value="{{$nonconsumables->quantity}}">{{$nonconsumables->quantity}}</span>@endforeach
-                            </td>
+                            <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)<span class="label label-default" value="{{$equipment->item}}">{{$equipment->item}}</span>@endforeach</td>
+                            <td {{$borrow->id}}>@foreach($borrow->nonconsumables as $nonconsumables)<span class="label label-default" id="{{$nonconsumables->id}}" value="{{$nonconsumables->quantity}}">{{$nonconsumables->quantity}}</span>@endforeach</td>
 
                             {{--<td>{{$borrow->updated_at->diffForHumans()}}</td>--}}
                         </tr>
@@ -160,22 +162,79 @@
                 //  $('#sendNewSms').prop("disabled", !this.checked);
                 $("#error").modal();
             } else {
+                var list = document.getElementById("userquerytable-container");
 
+// As long as <ul> has a child node, remove it
+                while (list.hasChildNodes()) {
+                    list.removeChild(list.firstChild);
+                }
+
+                var chkArray = [];
+                var data;
+                $("input[name='return[]']:checked").map(function () {
+
+                    chkArray.push([$(this).closest("tr").find("td:eq(5)").text(), $(this).closest("tr").find("td:eq(6)").text()]);
+                    var colData = ["Item", "Quantity"];
+
+                    data = {"Cols": colData, "Rows": chkArray};
+
+
+                }).get();
+                alert(JSON.stringify(chkArray));
+                var table = $('<table/>').attr("id", "userquerytable").addClass("display").attr("cellspacing", "0").attr("width", "100%");
+
+
+                var tr = $('<tr/>');
+                table.append('<thead>').children('thead').append(tr);
+
+                for (var i = 0; i < data.Cols.length; i++) {
+                    tr.append('<th><span class="inline-edit">' + data.Cols[i] + '</span></th>');
+                }
+                for (var r = 0; r < data.Rows.length; r++) {
+                    var tr = $('<tr/>');
+                    table.append(tr);
+                    //loop through cols for each row...
+                    for (var c = 0; c < data.Cols.length; c++) {
+                        if (c % 2 == 0) {
+//                            alert('even')
+// ;
+                            tr.append('<td>' + data.Rows[r][c] + '</td>');
+                        } else {
+                            tr.append('<td><input type="number" min="1" max="' + data.Rows[r][c] + '" required="" name="quantity[]" id="quantity" value="1"></td><input type="hidden" name="originalQuantity[]" id="originalQuantity" value="' + data.Rows[r][c] + '" >');
+                        }
+//
+                    }
+                }
+
+
+                if ($.fn.dataTable.isDataTable('#userquerytable')) {
+                    $('#userquerytable').DataTable();
+                }
+                else {
+
+                    $('#userquerytable').DataTable().destroy();
+
+                    $('#userquerytable-container').append(table);
+                    $('#userquerytable').DataTable({
+//                        retrieve: true,
+//                        destroy: true
+                        "pagingType": "full_numbers"
+                    });
+                }
                 $("#return").modal();
 
             }
 
 
-
         }
 
-                {{--{{json_encode($borrow->nonconsumables()->getRelatedIds())}}--}}
-                {{--{{json_encode($borrow->equipments()->getRelatedIds())}}--}}
+        {{--{{json_encode($borrow->nonconsumables()->getRelatedIds())}}--}}
+        {{--{{json_encode($borrow->equipments()->getRelatedIds())}}--}}
 
 
-        $(function () {
+$(function () {
 
-            $('#firm_table').DataTable( {
+            $('#firm_table').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
                     'copyHtml5',
@@ -183,16 +242,10 @@
                     'csvHtml5',
                     'pdfHtml5'
                 ]
-            } );
+            });
 
 
-
-
-
-
-
-
-                var button = $('#sendNewSms');
+            var button = $('#sendNewSms');
             button.attr('disabled', 'disabled');
 
             $("input[id='checkbox']").change(function () {

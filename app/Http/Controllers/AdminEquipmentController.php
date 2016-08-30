@@ -72,7 +72,7 @@ class AdminEquipmentController extends Controller
 
             foreach ($request->originalQuantity as $key => $value) {
                 if (array_key_exists($key, $request->quantity) && array_key_exists($key, $request->originalQuantity) && array_key_exists($key, $request->borrows))
-                    $item = NonConsumable::create(['quantity' => ($request->quantity[$key]), 'item' => $request->borrows[$key], 'status' => 0]);
+                    $item = NonConsumable::create(['quantity' => ($request->originalQuantity[$key] - $request->quantity[$key]), 'item' => $request->borrows[$key], 'status' => 0]);
                 $quantityBorrow = NonConsumable::create(['quantity' => $request->quantity[$key], 'item' => $request->borrows[$key], 'status' => 1]);
                 $itemid = $item->id;
                 $quantityBorrowId[] = $quantityBorrow->id;
@@ -92,7 +92,7 @@ class AdminEquipmentController extends Controller
                 }
 
                 foreach ($quantityBorrowId as $borrowId) {
-                    NonConsumable::where('id', $borrowId)->update(['status' => 1]);
+                    NonConsumable::where('id', $borrowId)->update(['status' => 1, 'currentquantity' => $request->originalQuantity[$key] - $request->quantity[$key] ]);
                 }
 
             }

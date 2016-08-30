@@ -187,7 +187,7 @@
                             <td class="quantity" style="{{$equipment->nonconsumable->quantity <= 1 ? 'color: #9f191f' : ''}}">{{$equipment->nonconsumable->quantity >=1 ?$equipment->nonconsumable->quantity : 'Out of stock'}}</td>
                             <td>{{$equipment->description}}</td>
                             <td>
-                                <span class="label label-{{$equipment->status==1 ? 'success':'default'}}">{{$equipment->status ? 'Available' : 'Borrowed'}}</span>
+                                <span class="label label-{{$equipment->nonconsumable->quantity >=1 ? $equipment->status==1 ? 'success':'default' : 'danger'}}">{{$equipment->nonconsumable->quantity >=1 ?$equipment->status ? 'Available' : 'Borrowed' : 'Unavailable'}}</span>
                             </td>
                             <td>{{$equipment->created_at->diffForHumans()}}</td>
                             <td>{{$equipment->updated_at->diffForHumans()}}</td>

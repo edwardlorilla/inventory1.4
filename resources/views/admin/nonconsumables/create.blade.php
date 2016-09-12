@@ -2,8 +2,7 @@
 
 @section('htmlheader_title', 'Create Equipment')
 @section('css')
-
-
+    {!! Html::style('css/parsley.min.css') !!}
 @endsection
 @section('contentheader_title', 'Create')
 
@@ -16,7 +15,7 @@
         </div><!-- /.box-header -->
         <!-- form start -->
         {!! Form::open(['method'=>'POST', 'action'=>'AdminEquipmentController@store' , 'files'=>true, 'data-parsley-validate' => ''] ) !!}
-    {{--'title', 'body','category_id', 'photo_id'--}}
+        {{--'title', 'body','category_id', 'photo_id'--}}
 
         <div class="box-body">
             <div class="form-group">
@@ -25,7 +24,7 @@
             </div>
             <div class="form-group">
                 {!! Form::label('category_id', ucfirst('Categories:')) !!}
-                {!! Form::select('category_id',['' => 'Choose categories'] + $categories,null, ['class'=>'form-control myselect', 'required' => ''])!!}
+                {!! Form::select('category_id',['' => 'Choose categories']+ $categories,null, ['class'=>'form-control myselect', 'required' => '' ])!!}
             </div>
             <div class="form-group">
                 {!! Form::label('description', ucfirst('body:')) !!}
@@ -38,16 +37,8 @@
 
             <div class="form-group">
                 {!! Form::label('photo_id', ucfirst('photo:')) !!}
-                {!! Form::file('photo_id',null, ['class'=>'form-control', 'required' => '']) !!}
+                {!! Form::file('photo_id',null, ['class'=>'form-control', 'required' => '']) !!} {!! Form::hidden('consumable', 0, ['class'=>'form-control']) !!}{!! Form::hidden('hasQuantity', 0, ['class'=>'form-control']) !!}
             </div>
-
-            <div class="form-group">
-                {!! Form::label('nonconsumable_id', ucfirst('Quantity:')) !!}
-                {!! Form::number('nonconsumable_id', null, ['class'=>'form-control']) !!}
-            </div>
-
-                {!! Form::hidden('consumable', 1, ['class'=>'form-control']) !!}
-            {!! Form::hidden('hasQuantity', 1, ['class'=>'form-control']) !!}
 
 
             {{--['item', 'description','status','category_id', 'photo_id'];--}}
@@ -65,7 +56,6 @@
 
 @endsection
 @section('sc')
-    {!! Html::style('css/parsley.min.css') !!}
     {!! Html::script('js/parsley.min.js') !!}
     {!! Html::style('plugins/select2/select2.min.css') !!}
     {!! Html::script('plugins/select2/select2.full.js') !!}

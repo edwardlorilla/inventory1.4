@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Illuminate\Support\Facades\Redirect;
+use Mockery\CountValidator\Exception;
 
 class AdminBorrowController extends Controller
 {
@@ -46,46 +47,15 @@ class AdminBorrowController extends Controller
      */
     public function store(Request $request)
     {
-//dd($request);
-
         foreach ($request->return as $id) {
             $borrow = Borrow::find($id);
             foreach ($borrow->equipments as $equipment) {
-                Equipment::where('id', $equipment->id)->update(['status' => 1]);
+                Equipment::where('id', $equipment->id)->update(['status' => 1, 'consumable' => 1, 'outOfStock' => 0, 'nonconsumable_id' => null]);
             }
 
-            dd($borrow->currentquantity);
-            foreach ($request->originalQuantity as $key => $value) {
-
-                if (array_key_exists($key, $request->quantity) && array_key_exists($key, $request->originalQuantity) && array_key_exists($key, $request->return))
-                    $item = NonConsumable::create(['quantity' => ($request->originalQuantity[$key] + $request->quantity[$key]), 'item' => $request->return[$key], 'status' => 0]);
-                $quantityBorrow = NonConsumable::create(['quantity' => $request->quantity[$key], 'item' => $request->return [$key], 'status' => 1]);
-                $itemid = $item->id;
-                $quantityBorrowId[] = $quantityBorrow->id;
-
-
-                if (!($request->originalQuantity[$key] - $request->quantity[$key]) == 0) {
-                    foreach ($request->return as $id) {
-                        Equipment::where('id', $id)->update(['status' => 1, 'nonconsumable_id' => $itemid]);
-                    }
-
-                } else {
-                    foreach ($request->return as $id) {
-                        Equipment::where('id', $id)->update(['status' => 0, 'nonconsumable_id' => $itemid]);
-                    }
-
-                }
-
-                foreach ($quantityBorrowId as $borrowId) {
-                    NonConsumable::where('id', $borrowId)->update(['status' => 1]);
-                }
-
-            }
-
-            if ($request->originalQuantity == $request->quantity) {
-                Borrow::destroy($request->return);
-            }
+            Borrow::destroy($request->return);
         }
+        session()->flash('RETURN', 'The Equipment is successfully return');
         return Redirect::route('admin.equipment.index');
     }
 
@@ -97,7 +67,7 @@ class AdminBorrowController extends Controller
      */
     public function show($id)
     {
-        //
+       
     }
 
     /**

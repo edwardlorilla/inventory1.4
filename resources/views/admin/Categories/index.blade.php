@@ -93,7 +93,7 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </div><!-- /.example-modal -->
-
+    @include('partial.message')
     <div class="col-md-6">
         <div class="box box-primary">
             <div class="box-header">

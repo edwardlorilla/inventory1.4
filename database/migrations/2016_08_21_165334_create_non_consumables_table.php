@@ -17,7 +17,7 @@ class CreateNonConsumablesTable extends Migration
             $table->string('item');
             $table->integer('quantity');
             $table->boolean('status');
-            $table->integer('currentquantity');
+            $table->string('name')->nullable();;
             $table->timestamps();
         });
     }

@@ -21,7 +21,10 @@ class CreateEquipmentTable extends Migration
             $table->string('item');
             $table->text('description');
             $table->boolean('status');
-             
+            $table->boolean('consumable');
+            $table->boolean('outOfStock');
+            $table->boolean('hasQuantity');
+            
             $table->timestamps();
         });
     }

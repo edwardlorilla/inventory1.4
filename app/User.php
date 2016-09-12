@@ -1,8 +1,9 @@
 <?php
 
 namespace App;
-
+use Nicolaslopezj\Searchable\SearchableTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class User extends Authenticatable
 {
@@ -11,15 +12,18 @@ class User extends Authenticatable
      *
      * @var array
      */
+  
     protected $fillable = [
         'name', 'email', 'password','role_id','photo_id', 'is_active',
     ];
-
+    protected $dates = ['last_login_at'];
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
+
+
     protected $hidden = [
         'password', 'remember_token',
     ];
@@ -38,7 +42,10 @@ class User extends Authenticatable
         return false;
     
     }
-
+    public function borrows()
+    {
+        return $this->belongsToMany('App\Borrow');
+    }
 
     
     public function equipment(){
@@ -49,4 +56,5 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\NonConsumable');
     }
+    
 }

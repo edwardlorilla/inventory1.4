@@ -10,7 +10,8 @@
         "acacha/admin-lte-template-laravel": "2.*",
         "laravelcollective/html": "5.2.*",
         "watson/active": "^2.0",
-        "mirzabusatlic/laravel-schedule-monitor": "^1.01"
+        "mirzabusatlic/laravel-schedule-monitor": "^1.01",
+        "nicolaslopezj/searchable": "1.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

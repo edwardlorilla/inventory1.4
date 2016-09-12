@@ -14,7 +14,7 @@ class AddNonConsumableIdToEquipments extends Migration
     {
         Schema::table('equipment', function (Blueprint $table) {
             $table->integer('nonconsumable_id')->unsigned()->index()->nullable();
-
+          
         });
     }
 

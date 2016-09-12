@@ -136,32 +136,7 @@ class AdminUsersController extends Controller
         Session::flash('Do you want to delete?', 'The user has been deleted');
         return redirect()->route('admin.users.index');
     }
-    public function getAssistants()
-    {
-        $users = User::whereHas('role', function($q)
-        {
-            $q->where('name', 'Assistant');
-        })->get();
-
-        return view('admin.users.assistants.index',compact('users'));
-    }
-    public function getStudents()
-    {
-        $users = User::whereHas('role', function($q)
-        {
-            $q->where('name', 'Student');
-        })->get();
-
-        return view('admin.users.students.index',compact('users'));
-    }
-    public function getInstructors()
-    {
-        $users = User::whereHas('role', function($q)
-        {
-            $q->where('name', 'Instructor');
-        })->get();
-        return view('admin.users.instructors.index',compact('users'));
-    }
+   
 
 
 }

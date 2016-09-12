@@ -33,7 +33,7 @@
             </div>
             <div class="form-group">
                 {!! Form::label('role_id', ucfirst('role:')) !!}
-                {!! Form::select('role_id', [''=>'Choose options']+ $roles ,null, ['class'=>'form-control'])!!}
+                {!! Form::select('role_id', [''=>'Choose options']+ $roles ,null, ['class'=>'form-control myselect'])!!}
             </div>
             <div class="form-group">
                 {!! Form::label('photo_id', ucfirst('photo:')) !!}
@@ -58,5 +58,8 @@
 @endsection
 @section('sc')
     {!! Html::script('js/parsley.min.js') !!}
+    {!! Html::style('plugins/select2/select2.min.css') !!}
+    {!! Html::script('plugins/select2/select2.full.js') !!}
+    <script>$(".myselect").select2();</script>
 @endsection
 {{--'name', 'email', 'password','role_id','photo_id', 'is_active',--}}

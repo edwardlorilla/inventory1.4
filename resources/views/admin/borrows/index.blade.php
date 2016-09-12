@@ -3,16 +3,57 @@
 @section('htmlheader_title')
     Borrow
 @endsection
-@section('contentheader_title', 'All borrows')
+@section('contentheader_title', 'All Borrows')
 @section('css')
+    {!! Html::script('js/modernizr.custom.63321.js') !!}
     {!! Html::style('css/jquery.dataTables.min.css') !!}
     {!! Html::style('css/buttons.dataTables.min.css') !!}
+    <style>
+
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+
+    </style>
 @endsection
 
 @section('main-content')
 
-    @include('partial.errorModal')
+    @include('partial.message')
+    <div class="modal fade" id="email">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Quick Email</h4>
 
+                </div>
+                <div class="modal-body">
+                    {{--{!! Form::open(['id'=>'delete_form' , 'method'=>'POST',]) !!}--}}
+
+                    <div id="userquerytable-container"></div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    {!! Form::submit('Send Email', ['class'=>'btn btn-primary']) !!}
+                    {!! Form::close() !!}
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
     <div class="modal fade" id="return">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -23,12 +64,7 @@
 
                 </div>
                 <div class="modal-body">
-                    {!! Form::open(['id'=>'delete_form' , 'method'=>'POST',]) !!}
-
-                    <div class="form-group">
-                        <div id="userquerytable-container"></div>
-                    </div>
-                    {{--{!! Form::select('borrows', $borrowdrop , null , ['class' => 'select2-multi form-control', 'multiple'=>'multiple']) !!}--}}
+                    {!! Form::open(['id'=>'return_form' , 'method'=>'POST',]) !!}
 
 
                 </div>
@@ -40,78 +76,132 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-    <div class="box box-primary" id="ValidateCheckBox">
-        <div class="box-header">
-            <h3 class="box-title">Borrows</h3>
-        </div><!-- /.box-header -->
-        <div class="box-body">
-            <div class="btn-group" style="margin-bottom: 20px">
-
-                <button name="sendNewSms" class="btn bg-primary btn-flat " id="sendNewSms" type="submit"
-                        onClick="ValidateCheckBox();">Return
-                </button>
-
-                {{--<button type="button" class="btn bg-navy btn-flat" data-toggle="dropdown" aria-expanded="false">Export--}}
-                {{--to <span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>--}}
-                {{--<ul class="dropdown-menu" role="menu">--}}
-                {{--<li><a onclick="exportTo('csv');" href="javascript://">CSV</a></li>--}}
-                {{--<li><a onclick="exportTo('txt');" href="javascript://">TXT</a></li>--}}
-                {{--<li><a onclick="exportTo('xls');" href="javascript://">XLS</a></li>--}}
-                {{--<li><a onclick="exportTo('sql');" href="javascript://">SQL</a></li>--}}
-                {{--</ul>--}}
-            </div>
 
 
-            <table id="firm_table" class="table table-bordered table-striped">
-                <thead>
-                <tr>
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="pull-left header"><i class="fa fa-th"></i></li>
+            <li class="active"><a href="#tab_1" data-toggle="tab"><i class='fa fa-bookmark'></i> Consumables</a></li>
+            <li><a href="#tab_2" data-toggle="tab"><i class='fa fa-barcode'></i> Non Consumables</a></li>
 
-                    <th class="nosort"><input type="checkbox" id="checkAll"></th>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <table id="firm_table" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
 
-                    <th class="nosort">ID</th>
-                    <th>Approved by</th>
-                    <th>Borrowed by</th>
-                    <th>Email</th>
-                    <th>Equipment borrowed</th>
-                    <th>Equipment Quantity</th>
-                </tr>
-                </thead>
-                <tbody>
-                @if($borrows)
+                        {{--<th class="nosort"><input type="checkbox" id="checkAll"></th>--}}
 
-                    @foreach( $borrows as $borrow)
-                        <tr>
-                            {{--<td class="details-control"></td>--}}
-                            <td>
-                                <input type="checkbox"
-                                       id="checkbox"
-                                       class="checkboxs CheckBoxClassName"
-                                       name="return[]"
-                                       value="{{$borrow->id}}" form="delete_form">
-                            </td>
-                            <td>{{$borrow->id}}</td>
-                            <td>{{$borrow->user->name}}</td>
-                            <td><strong>{{$borrow->name}}</strong></td>
-                            {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
+                        <th class="nosort">ID</th>
+                        <th>Approved by</th>
+                        <th>Borrowed by</th>
+                        <th>Email</th>
+                        <th>Equipment borrowed</th>
+                        <th>Equipment Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if($borrows)
 
-                            <td><a href="#" class="button-email"
-                                   title="{{$borrow->description}}">{{$borrow->description}}</a></td>
+                        @foreach( $borrows as $borrow)
 
-                            <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)<span class="label label-default" value="{{$equipment->item}}">{{$equipment->item}}</span>@endforeach</td>
-                            <td {{$borrow->id}}>@foreach($borrow->nonconsumables as $nonconsumables)<span class="label label-default" id="{{$nonconsumables->id}}" value="{{$nonconsumables->quantity}}">{{$nonconsumables->quantity}}</span>@endforeach</td>
+                            @if(($borrow->nonconsumable))
+                                @if($borrow->nonconsumable->quantity)
+                                    <tr>
+                                        {{--<td class="details-control"></td>--}}
+                                        {{--<td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]"--}}
+                                        {{--value="{{$borrow->id}}" form="delete_form"></td>--}}
 
-                            {{--<td>{{$borrow->updated_at->diffForHumans()}}</td>--}}
-                        </tr>
+                                        <td>{{$borrow->id}}</td>
+                                        <td>{{$borrow->user->name}}</td>
+                                        <td><a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a></td>
+                                        {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
 
-                    @endforeach
+                                        <td><a href="#" class="button-email"
+                                               title="{{$borrow->user->email}}">{{$borrow->user->email}}</a></td>
 
-                @endif
-                </tbody>
-                <tfoot>
-                </tfoot>
-            </table>
-        </div><!-- /.box-body -->
-    </div><!-- /.box -->
+                                        <td>@foreach($borrow->nonconsumables as $nonconsumables)<span
+                                                    class="label label-default" id="{{$nonconsumables->id}}"
+                                                    value="{{$nonconsumables->name}}">{{$nonconsumables->name}}</span>@endforeach
+                                        </td>
+                                        <td>@foreach($borrow->nonconsumables as $nonconsumables)<span
+                                                    class="label label-default" id="{{$nonconsumables->id}}"
+                                                    value="{{$nonconsumables->quantity}}">{{$nonconsumables->quantity}}</span>@endforeach
+                                        </td>
+
+                                        {{--<td>{{$borrow->updated_at->diffForHumans()}}</td>--}}
+                                    </tr>
+                                @endif
+                            @endif
+
+
+                        @endforeach
+
+                    @endif
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+
+
+            </div><!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_2">
+                <div class="btn-group" style="margin-bottom: 20px;">
+                    <button name="sendNewSms" class="btn btn-primary btn-flat    " id="sendNewSms"
+                            type="submit"
+                            onClick="ValidateCheckBox();">Return
+                    </button>
+                </div>
+                <table id="firm_table2" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+
+                        <th class="nosort"><input type="checkbox" id="checkAll"></th>
+
+                        <th class="nosort">ID</th>
+                        <th>Approved by</th>
+                        <th>Borrowed by</th>
+                        <th>Email</th>
+                        <th>Equipment borrowed</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if($borrows)
+                        @foreach( $borrows as $borrow)
+                            @if($borrow->nonconsumable_id == 0)
+                                <tr>
+                                    <td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]" value="{{$borrow->id}}" form="return_form"></td>
+                                    <td>{{$borrow->id}}</td>
+                                    <td>{{$borrow->user->name}}</td>
+                                    <td><strong>{{$borrow->name}}</strong></td>
+                                    {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
+
+                                    <td><a href="#" class="button-email"
+                                           title="{{$borrow->description}}">{{$borrow->description}}</a></td>
+
+                                    <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)<span
+                                                class="label label-default"
+                                                value="{{$equipment->id}}">{{$equipment->item}}</span> ,@endforeach
+                                    </td>
+
+
+                                    {{--<td>{{$borrow->updated_at->diffForHumans()}}</td>--}}
+                                </tr>
+                            @endif
+
+                        @endforeach
+
+                    @endif
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div><!-- /.tab-pane -->
+
+        </div><!-- /.tab-content -->
+    </div><!-- nav-tabs-custom -->
+
 
 @endsection
 @section('sc')
@@ -128,6 +218,15 @@
     {!! Html::script('js/jquery.js') !!}
     {!! Html::script('js/jquery.slimscroll.min.js') !!}
 
+    @if(session()->has('nonconsumables'))
+        <script>
+            $(document).ready(function () {
+                $('.nav-tabs a[href="#tab_2"]').tab('show')
+
+            });
+        </script>
+    @endif
+    <!--End Script Open Pannel--->
     <script>
         $('table').tableCheckbox({/* options */});
         //        function exportTo(type) {
@@ -140,7 +239,17 @@
         //
         //        }
 
+        $('.button-email').click(function (e) {
+            var list = document.getElementById("userquerytable-container");
+            while (list.hasChildNodes()) {
+                list.removeChild(list.firstChild);
+            }
 
+            var title = $(this).attr('title');
+
+            $('#userquerytable-container').append('<form action="#" method="post"> <div class="form-group"> <input type="email" class="form-control" name="emailto" placeholder="Email to:" value="' + title + '"> </div> <div class="form-group"> <input type="text" class="form-control" name="subject" placeholder="Subject"> </div> <div> <textarea class="textarea" placeholder="Message" style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea> </div> </form>');
+            $("#email").modal();
+        });
         var selectedCheckBoxesValue = '';
         function ValidateCheckBox() {
 
@@ -154,76 +263,9 @@
                     selectedCheckBoxesValue += ',' + $(selected).val();
                 }
             });
-            // Here you also get all the comma separated values if you want else use below method for it
 
 
-            if (selectedCheckBoxesValue.length == 0) {
-
-                //  $('#sendNewSms').prop("disabled", !this.checked);
-                $("#error").modal();
-            } else {
-                var list = document.getElementById("userquerytable-container");
-
-// As long as <ul> has a child node, remove it
-                while (list.hasChildNodes()) {
-                    list.removeChild(list.firstChild);
-                }
-
-                var chkArray = [];
-                var data;
-                $("input[name='return[]']:checked").map(function () {
-
-                    chkArray.push([$(this).closest("tr").find("td:eq(5)").text(), $(this).closest("tr").find("td:eq(6)").text()]);
-                    var colData = ["Item", "Quantity"];
-
-                    data = {"Cols": colData, "Rows": chkArray};
-
-
-                }).get();
-                alert(JSON.stringify(chkArray));
-                var table = $('<table/>').attr("id", "userquerytable").addClass("display").attr("cellspacing", "0").attr("width", "100%");
-
-
-                var tr = $('<tr/>');
-                table.append('<thead>').children('thead').append(tr);
-
-                for (var i = 0; i < data.Cols.length; i++) {
-                    tr.append('<th><span class="inline-edit">' + data.Cols[i] + '</span></th>');
-                }
-                for (var r = 0; r < data.Rows.length; r++) {
-                    var tr = $('<tr/>');
-                    table.append(tr);
-                    //loop through cols for each row...
-                    for (var c = 0; c < data.Cols.length; c++) {
-                        if (c % 2 == 0) {
-//                            alert('even')
-// ;
-                            tr.append('<td>' + data.Rows[r][c] + '</td>');
-                        } else {
-                            tr.append('<td><input type="number" min="1" max="' + data.Rows[r][c] + '" required="" name="quantity[]" id="quantity" value="1"></td><input type="hidden" name="originalQuantity[]" id="originalQuantity" value="' + data.Rows[r][c] + '" >');
-                        }
-//
-                    }
-                }
-
-
-                if ($.fn.dataTable.isDataTable('#userquerytable')) {
-                    $('#userquerytable').DataTable();
-                }
-                else {
-
-                    $('#userquerytable').DataTable().destroy();
-
-                    $('#userquerytable-container').append(table);
-                    $('#userquerytable').DataTable({
-//                        retrieve: true,
-//                        destroy: true
-                        "pagingType": "full_numbers"
-                    });
-                }
-                $("#return").modal();
-
-            }
+            $("#return").modal();
 
 
         }
@@ -235,6 +277,17 @@
 $(function () {
 
             $('#firm_table').DataTable({
+                "paging": false,
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ]
+            });
+            $('#firm_table2').DataTable({
+                "paging": false,
                 dom: 'Bfrtip',
                 buttons: [
                     'copyHtml5',
@@ -263,4 +316,6 @@ $(function () {
             });
         });
     </script>
+
+
 @endsection()

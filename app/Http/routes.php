@@ -14,6 +14,7 @@
 
 use Illuminate\Http\Request;
 
+Route::controller('auth', 'Auth\AuthController', ['getLogin' => 'auth.login']);
 Route::get('/', function () {
     return view('welcome');
 });
@@ -21,12 +22,12 @@ Route::group(['middleware' => 'web'], function() {
     Route::auth();
     Route::get('/home', 'HomeController@index')->name('admin.home');
     Route::resource('admin/users', 'AdminUsersController');
-    Route::get('admin/roles/students', 'AdminUsersController@getStudents')->name('admin.roles.getStudents');
-    Route::get('admin/roles/instructors', 'AdminUsersController@getInstructors')->name('admin.roles.getInstructors');
-    Route::get('admin/roles/assistants', 'AdminUsersController@getAssistants')->name('admin.roles.getAssistants');
+   
     Route::get('admin/equipment', function() {
         return view('admin.equipment.index');
     });
+    Route::resource('admin/nonconsumables','AdminConsumablesController', ['only' => ['create']]);;
+
     Route::resource('admin/equipment', 'AdminEquipmentController');
     Route::get('admin/users/{users/confirm}',['as'=>'admin.users.confirm', 'uses'=>'AdminUsersController@confirm']);
     Route::delete('admin/roles', 'AdminRolesController@destroy');
@@ -36,9 +37,10 @@ Route::group(['middleware' => 'web'], function() {
     Route::resource('admin/borrow','AdminBorrowController');
     Route::post('admin/borrows/{id?}', 'AdminBorrowController@store')->name('admin.borrows.store');
     Route::post('admin/equipment/{id?}', 'AdminEquipmentController@store')->name('admin.equipment.store');
-    
+
     Route::delete('admin/equipment/', 'AdminEquipmentController@destroy')->name('admin.equipment.delete');
 
+    Route::get('home', ['as' => 'admin.dashboard.index', 'uses' => 'AdminDashboardController@index']);
 
-
+   
 });

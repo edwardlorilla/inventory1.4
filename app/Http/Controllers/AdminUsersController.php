@@ -10,6 +10,7 @@ use App\User;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\DB;
 
 class AdminUsersController extends Controller
 {
@@ -24,8 +25,8 @@ class AdminUsersController extends Controller
     }
     public function index()
     {
-        $users = User::all();
-
+       
+$users = User::all();
         return view('admin.users.index',compact('users'));
     }
 
@@ -38,7 +39,7 @@ class AdminUsersController extends Controller
     public function create(User $user)
     {
         $roles=Role::lists('name', 'id')->all();
-        return view('admin.users.create', compact('roles', 'user'));
+        return view('admin.users.create', compact('roles'));
     }
 
     /**

@@ -174,11 +174,12 @@
                                     <td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]" value="{{$borrow->id}}" form="return_form"></td>
                                     <td>{{$borrow->id}}</td>
                                     <td>{{$borrow->user->name}}</td>
-                                    <td><strong>{{$borrow->name}}</strong></td>
                                     {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
+                                    <td><a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a></td>
 
                                     <td><a href="#" class="button-email"
-                                           title="{{$borrow->description}}">{{$borrow->description}}</a></td>
+                                           title="{{$borrow->user->email}}">{{$borrow->user->email}}</a></td>
+
 
                                     <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)<span
                                                 class="label label-default"

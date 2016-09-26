@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use Illuminate\Support\Facades\Cache;
 use Nicolaslopezj\Searchable\SearchableTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Symfony\Component\HttpKernel\Profiler\Profile;
@@ -56,5 +57,6 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\NonConsumable');
     }
+    
     
 }

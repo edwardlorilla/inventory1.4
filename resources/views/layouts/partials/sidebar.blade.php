@@ -82,6 +82,24 @@
             </li>
 
 
+
+
+            <li class="treeview {{ Request::is('admin/keyholder*') || Request::is('admin/keyholder*') ? 'active' : '' }}">
+                <a href="#"><i class='fa fa-key'></i> <span>Keyholder</span> <i
+                            class="fa fa-angle-left pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li class="{{active('admin.keyholder.index')}}"><a href="{{URL::route('admin.keyholder.index')}}"><i
+                                    class='fa fa-key'></i>All Keyholder</a></li>
+
+
+
+
+                </ul>
+            </li>
+
+            <li class="{{active('admin.location.index')}}"><a href="{{URL::route('admin.location.index')}}"><i
+                            class='fa fa-map-marker'></i> <span>Location</span></a></li>
+
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

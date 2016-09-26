@@ -34,6 +34,8 @@ Route::group(['middleware' => 'web'], function() {
     Route::resource('admin/roles','AdminRolesController');
     Route::delete('admin/categories', 'AdminCategoriesController@destroy');
     Route::resource('admin/categories','AdminCategoriesController');
+    Route::resource('admin/keyholder','AdminKeyholderController');
+    Route::resource('admin/location','AdminLocationController');
     Route::resource('admin/borrow','AdminBorrowController');
     Route::post('admin/borrows/{id?}', 'AdminBorrowController@store')->name('admin.borrows.store');
     Route::post('admin/equipment/{id?}', 'AdminEquipmentController@store')->name('admin.equipment.store');

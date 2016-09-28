@@ -6,6 +6,7 @@ use App\Borrow;
 use App\Category;
 use App\Equipment;
 use App\Http\Requests\EquipmentStore;
+use App\Location;
 use App\NonConsumable;
 use App\Photo;
 use App\User;
@@ -35,12 +36,13 @@ class AdminEquipmentController extends Controller
         $equipments = Equipment::all();
 
         $users = User::lists('name', 'id')->all();
+        $locations = Location::lists('room', 'id')->all();
         $borrows = Borrow::all();
 
 
         $equipmentdrop = Equipment::lists('item', 'id')->all();
 
-        return view('admin.equipments.index', compact('equipments', 'equipmentdrop', 'borrows', 'borrow', 'users', 'findusers'));
+        return view('admin.equipments.index', compact('equipments', 'equipmentdrop', 'borrows', 'borrow', 'users', 'findusers','locations'));
 
     }
 
@@ -70,9 +72,10 @@ class AdminEquipmentController extends Controller
 
             $borrow = new Borrow([
                 'user_id' => Auth::user()->id,
-                'borrowedby_id'=> $users->id
+                'borrowedby_id'=> $users->id,
+                'location_id' =>$request->location_id
             ]);
-
+           
 
             if ($request->originalQuantity) {
                 foreach ($request->originalQuantity as $key => $value) {
@@ -138,7 +141,7 @@ class AdminEquipmentController extends Controller
                 'description' => 'required',
                 'status' => 'required',
                 'category_id' => 'required',
-                'photo_id' => 'required',
+
             ]);
             $input = $request->all();
 
@@ -202,7 +205,7 @@ class AdminEquipmentController extends Controller
      */
     public function update(Request $request, $id)
     {
-
+//dd($request);
         $input = $request->all();
         if ($file = $request->file('photo_id')) {
             $name = time() . $file->getClientOriginalName();

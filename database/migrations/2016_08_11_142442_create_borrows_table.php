@@ -17,7 +17,7 @@ class CreateBorrowsTable extends Migration
 
             $table->integer('user_id')->unsigned()->index();
             $table->integer('borrowedby_id')->unsigned()->index();
-           
+            $table->integer('location_id')->unsigned()->index();
             $table->timestamps();
         });
     }

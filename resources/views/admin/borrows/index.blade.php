@@ -97,8 +97,10 @@
                         <th>Approved by</th>
                         <th>Borrowed by</th>
                         <th>Email</th>
+                        <th>Department</th>
                         <th>Equipment borrowed</th>
                         <th>Equipment Quantity</th>
+                        <th>Date/Time</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -119,7 +121,9 @@
                                         {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
 
                                         <td><a href="#" class="button-email"
-                                               title="{{$borrow->user->email}}">{{$borrow->user->email}}</a></td>
+                                               title="{{$borrow->user->email}}">{{$borrow->borrowedby->email}}</a></td>
+                                        <td><a href="#" class="button-email"
+                                               title="{{$borrow->location_id}}">{{$borrow->location_id == 0 ? 'location not found' : $borrow->location->room }}</a></td>
 
                                         <td>@foreach($borrow->nonconsumables as $nonconsumables)<span
                                                     class="label label-default" id="{{$nonconsumables->id}}"
@@ -130,7 +134,7 @@
                                                     value="{{$nonconsumables->quantity}}">{{$nonconsumables->quantity}}</span>@endforeach
                                         </td>
 
-                                        {{--<td>{{$borrow->updated_at->diffForHumans()}}</td>--}}
+                                        <td>{{$borrow->created_at->toDayDateTimeString()}}</td>
                                     </tr>
                                 @endif
                             @endif
@@ -164,6 +168,8 @@
                         <th>Borrowed by</th>
                         <th>Email</th>
                         <th>Equipment borrowed</th>
+                        <th>Borrowed at</th>
+
                     </tr>
                     </thead>
                     <tbody>
@@ -187,7 +193,7 @@
                                     </td>
 
 
-                                    {{--<td>{{$borrow->updated_at->diffForHumans()}}</td>--}}
+                                    <td>{{$borrow->updated_at->toDayDateTimeString()}}</td>
                                 </tr>
                             @endif
 

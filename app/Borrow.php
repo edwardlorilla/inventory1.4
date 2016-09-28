@@ -6,13 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Borrow extends Model
 {
-    protected $fillable = [
-        'borrowedby_id', 'user_id', 'nonconsumable_id'
-    ];
 
+    protected $fillable = [
+        'borrowedby_id', 'user_id', 'nonconsumable_id','location_id'
+    ];
     public function equipments()
     {
         return $this->belongsToMany('App\Equipment');
+    }
+    public function location()
+    {
+        return $this->belongsTo('App\Location');
     }
     
 
@@ -42,4 +46,6 @@ class Borrow extends Model
     {
         return $this->belongsTo('App\NonConsumable');
     }
+
+
 }

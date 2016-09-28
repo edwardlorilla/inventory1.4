@@ -12,6 +12,8 @@
 
     <style>
 
+
+
         .example-modal .modal {
             position: relative;
             top: auto;
@@ -55,14 +57,19 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                     aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><span class="inline-edit">Equipment Borrows</span></h4>
+                        <h4 class="modal-title"><span class="inline-edit">Stock out Equipment</span></h4>
                     </div>
                     <div class="modal-body">
                         {!! Form::open(['id'=>'delete_form', 'method'=>'post']) !!}
 
                         <div class="form-group has-feedback">
-                            {!! Form::label('name', 'Name') !!}
-                            {!! Form::select('name', $users, null,  ['class'=>'form-control'])!!}
+                            {!! Form::label('name', 'Name') !!}<br>
+                            {!! Form::select('name', $users, null,  ['class'=>' myselect'])!!}
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('location_id', ucfirst('Department:')) !!}<br>
+                            {!! Form::select('location_id', $locations, null,  ['class'=>'myselect'])!!}
+
                         </div>
                         <div class="form-group">
                             <div id="userquerytable-container"></div>
@@ -97,6 +104,8 @@
                             {!! Form::label('name', 'Name') !!}
                             {!! Form::select('name', $users, null,  ['class'=>'form-control'])!!}
                         </div>
+
+
                         <div class="form-group">
                             {{--{!! Form::hidden('items', '', ['class' => 'form-control', 'id' =>'itemArray']) !!}--}}
                         </div>
@@ -151,10 +160,18 @@
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
             <li class="pull-left header"><i class="fa fa-th"></i></li>
-            <li class="active"><a href="#tab_1" data-toggle="tab"><i class='fa fa-bookmark'></i> Consumables <span class="label label-primary">{{App\Equipment::where('hasQuantity','=',1)->count() == 0 ? App\Equipment::where('hasQuantity','=',1)->count() :App\Equipment::where('hasQuantity','=',1)->count() }}</span></a></li>
-            <li><a href="#tab_2" data-toggle="tab"><i class='fa fa-barcode'></i> Non Consumables <span class="label label-info">{{App\Equipment::where('nonconsumable_id','=',null)->count() == 0 ? App\Equipment::where('nonconsumable_id','=',null)->count() :App\Equipment::where('nonconsumable_id','=',null)->count() }}</span></a></li>
-            <li><a href="#tab_3" data-toggle="tab"><i class='fa fa-bookmark'></i> Out of Stock <span class="label label-danger">{{App\Equipment::where('outOfStock','=',1)->count() == 0 ? App\Equipment::where('outOfStock','=',1)->count() :App\Equipment::where('outOfStock','=',1)->count() }}</span></a></li>
-            <li><a href="#tab_4" data-toggle="tab"><i class='fa fa-bookmark'></i> Borrowed <span class="label label-primary">{{App\Equipment::where('consumable','=',0)->count() == 0 ? App\Equipment::where('consumable','=',0)->count() :App\Equipment::where('consumable','=',0)->count() }}</span></a></li>
+            <li class="active"><a href="#tab_1" data-toggle="tab"><i class='fa fa-bookmark'></i> Consumables <span
+                            class="label label-primary">{{App\Equipment::where('hasQuantity','=',1)->count() == 0 ? App\Equipment::where('hasQuantity','=',1)->count() :App\Equipment::where('hasQuantity','=',1)->count() }}</span></a>
+            </li>
+            <li><a href="#tab_2" data-toggle="tab"><i class='fa fa-barcode'></i> Non Consumables <span
+                            class="label label-info">{{App\Equipment::where('nonconsumable_id','=',null)->count() == 0 ? App\Equipment::where('nonconsumable_id','=',null)->count() :App\Equipment::where('nonconsumable_id','=',null)->count() }}</span></a>
+            </li>
+            <li><a href="#tab_3" data-toggle="tab"><i class='fa fa-bookmark'></i> Out of Stock <span
+                            class="label label-danger">{{App\Equipment::where('outOfStock','=',1)->count() == 0 ? App\Equipment::where('outOfStock','=',1)->count() :App\Equipment::where('outOfStock','=',1)->count() }}</span></a>
+            </li>
+            <li><a href="#tab_4" data-toggle="tab"><i class='fa fa-bookmark'></i> Borrowed <span
+                            class="label label-primary">{{App\Equipment::where('consumable','=',0)->count() == 0 ? App\Equipment::where('consumable','=',0)->count() :App\Equipment::where('consumable','=',0)->count() }}</span></a>
+            </li>
 
         </ul>
         <div class="tab-content">
@@ -163,8 +180,8 @@
 
 
                     <div class="box-body">
-                        <div id="grpChkBox">
-                            <div class="btn-group" style="margin-bottom: 20px;">
+                        <div id="grpChkBox" >
+                            <div class="btn-group" style="margin-bottom: 20px; ">
 
                                 <button name="sendNewSms" class="btn bg-olive btn-flat " id="sendNewSms" type="submit"
                                         onClick="ValidateCheckBox();">Consume
@@ -204,7 +221,7 @@
                         </div>
 
 
-                        <table id="firm_table" class="table table-bordered table-striped">
+                        <table  id="firm_table" class="table table-bordered table-striped table-fixed">
                             <thead>
                             <tr>
                                 <th class="nosort"><input type="checkbox" id="checkAll"></th>
@@ -217,7 +234,6 @@
                                 <th class="des">Description</th>
                                 <th class="sta">Status</th>
                                 <th class="created">Created at</th>
-                                <th class="updated">Return at</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -255,7 +271,7 @@
                                             </td>
 
                                             <td>{{$equipment->created_at->diffForHumans()}}</td>
-                                            <td>{{$equipment->updated_at->diffForHumans()}}</td>
+
                                         </tr>
                                     @endif
                                 @endforeach
@@ -295,7 +311,7 @@
                         </div>
 
 
-                        <table id="tab2" class="table table-bordered table-striped">
+                        <table id="tab2" class="table table-bordered table-striped " width="100%" cellspacing="0">
                             <thead>
                             <tr>
                                 <th class="nosort"><input type="checkbox" id="checkAll"></th>
@@ -406,12 +422,12 @@
                                         @if($equipment->outOfStock == 1)
                                             <tr>
                                                 {{--<td><input type="checkbox"--}}
-                                                           {{--class="CheckBoxClassName" name="borrows[]"--}}
-                                                           {{--value="{{$equipment->id}}"--}}
-                                                           {{--form="delete_form"--}}
+                                                {{--class="CheckBoxClassName" name="borrows[]"--}}
+                                                {{--value="{{$equipment->id}}"--}}
+                                                {{--form="delete_form"--}}
 
-                                                            {{--{{$equipment->nonconsumable->quantity==0 ? 'disabled' : ''}}--}}
-                                                    {{--></td>--}}
+                                                {{--{{$equipment->nonconsumable->quantity==0 ? 'disabled' : ''}}--}}
+                                                {{--></td>--}}
                                                 <td><span class="inline-edit">{{$equipment->id}}</span></td>
                                                 <td>
                                                     <a href="{{route('admin.equipment.edit',$equipment->id)}}">{{$equipment->user_id == 0 ? 'no user' : $equipment->user->name}}</a>
@@ -446,6 +462,7 @@
                             <tfoot>
                             </tfoot>
                         </table>
+
 
                     </div><!-- /.box-body -->
                 </div><!-- /.tab-pane -->
@@ -541,7 +558,8 @@
     {!! Html::script('plugins/fastclick/fastclick.min.js') !!}
     {!! Html::script('js/dataTables.bootstrap.min.js') !!}
     {!! Html::script('js/jquery.dataTables.min.js') !!}
-
+    {!! Html::style('plugins/select2/select2.min.css') !!}
+    {!! Html::script('plugins/select2/select2.full.js') !!}
     {!! Html::script('js/jquery.js') !!}
     {!! Html::script('js/jquery.slimscroll.min.js') !!}
     {!! Html::script('js/parsley.min.js') !!}
@@ -574,6 +592,7 @@
         </script>
     @endif
     <script>
+        $(".myselect").select2();
         var editor;
 
 
@@ -587,6 +606,8 @@
             var yyyy = tdate.getFullYear(); //yields year
             var d = dd + "-" + ( MM + 1) + "-" + yyyy;
             $('#firm_table').DataTable({
+                "scrollY":        "500px",
+                "scrollCollapse": true,
                 "paging": false,
                 dom: 'Bfrtip',
                 buttons: [
@@ -605,6 +626,7 @@
                 ]
             });
             $('#tab2').DataTable({
+
                 "paging": false,
                 dom: 'Bfrtip',
                 buttons: [
@@ -808,6 +830,7 @@
 
                 $('#userquerytable-container').append(table);
                 $('#userquerytable').DataTable({
+
                     "pagingType": "full_numbers"
                 });
             }

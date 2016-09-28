@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Equipment extends Model
 {
-    protected $fillable = ['item', 'description','status','category_id', 'photo_id', 'nonconsumable_id','consumable','outOfStock','hasQuantity'];
+    protected $fillable = ['item', 'description','status','category_id', 'photo_id', 'nonconsumable_id','consumable','outOfStock','hasQuantity', 'location_id'];
     public function borrows()
     {
         return $this->belongsToMany('App\Borrow');

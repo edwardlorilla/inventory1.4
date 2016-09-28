@@ -11,6 +11,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Auth;
+
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
@@ -22,8 +24,16 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 
 $factory->define(App\Equipment::class, function (Faker\Generator $faker) {
     return [
-        'item' => $faker->name,
-        'description' => $faker->safeEmail,
-        'status' => 1,
+        
+            'item' => 'PILOT WYTEBOARD MARKER (BLACK)',
+            'category_id' => 1,
+            'description' => 'PILOT WYTEBOARD MARKER (BLACK)',
+            'user_id' => 1,
+            'status' => 1,
+            'consumable' => 1,
+            'outOfStock' => 0,
+            'hasQuantity' => 1,
+        
     ];
 });
+

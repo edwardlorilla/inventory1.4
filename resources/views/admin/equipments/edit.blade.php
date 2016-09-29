@@ -77,23 +77,22 @@
         </div><!-- /.box -->
     </div>
     <div class="row">
-            <div class="col-md-6">
-                <div class="box box-success">
-                    <div class="box-header with-border">
-                        <h1 class="box-title">{{$equipments->item}} History
-                            <small>{{$equipments->borrows()->count()}} users</small>
-                        </h1>
-                    </div><!-- /.box-header -->
-                    <div class="box-body">
+        <div class="col-md-6">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h1 class="box-title">{{$equipments->item}} History
+                        <small>{{$equipments->borrows()->count()}} users</small>
+                    </h1>
+                </div><!-- /.box-header -->
+                <div class="box-body">
                     <table id="firm_table2" class="table table-bordered table-striped">
                         <thead>
                         <tr>
 
                             <th class="no">#</th>
                             <th class="add">Borrowed by</th>
-                            <th class="Equipments">Equipments</th>
-                            <th class="Equipments">Equipments Quantity</th>
-
+                            <th class="Equipments">Equipments - Quantity</th>
+                            <th>Date/Time</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -101,19 +100,17 @@
                         @foreach($equipments->borrows as $borrow)
                             <tr>
                                 <th>{{$borrow->id}}</th>
-                                <td><a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a></td>
+                                <td>
+                                    <a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a>
+                                </td>
 
                                 <td>@foreach($borrow->nonconsumables as $nonconsumables)<span
                                             class="label label-default" id="{{$nonconsumables->id}}"
-                                            value="{{$nonconsumables->name}}">{{$nonconsumables->name}}</span>
+                                            value="{{$nonconsumables->name}}">{{$nonconsumables->name}} - {{$nonconsumables->quantity}}</span>
                                     @endforeach
                                 </td>
-                                @if($borrow->nonconsumables)
-                                    <td>@foreach($borrow->nonconsumables as $nonconsumables)<span
-                                                class="label label-default" id="{{$nonconsumables->id}}"
-                                                value="{{$nonconsumables->quantity}}"> {{$nonconsumables->quantity}} </span>@endforeach
-                                    </td>
-                                @endif
+
+                                <td>{{$borrow->created_at->toDayDateTimeString()}}</td>
                             </tr>
                         @endforeach
 
@@ -122,10 +119,10 @@
                         </tfoot>
                     </table>
 
-                    </div>
                 </div>
-
             </div>
+
+        </div>
     </div>
 @endsection
 @section('sc')

@@ -42,7 +42,7 @@ class AdminEquipmentController extends Controller
 
         $equipmentdrop = Equipment::lists('item', 'id')->all();
 
-        return view('admin.equipments.index', compact('equipments', 'equipmentdrop', 'borrows', 'borrow', 'users', 'findusers','locations'));
+        return view('admin.equipments.index', compact('equipments', 'equipmentdrop', 'borrows', 'borrow', 'users', 'findusers', 'locations'));
 
     }
 
@@ -67,15 +67,33 @@ class AdminEquipmentController extends Controller
     {
 
 
+
+        if ($request->checkin) {
+            $str = trim($request->no, ",");
+
+            $ids = explode(",", $str);
+            $intArray = array_map(
+                function ($value) {
+                    return (int)$value;
+                },
+                $ids
+            );
+            foreach ($intArray as $key => $value) {
+                $nonequipmentids = Equipment::findOrFail($intArray[$key])->nonconsumable_id;
+//                dd($nonequipmentids);
+                    NonConsumable::where('id', $nonequipmentids)->update(['quantity' => ($request->checkinoriginalQuantity[$key] + $request->checkin[$key])]);
+
+            }
+        }
         if (User::find($request->input('name'))) {
             $users = User::find($request->input('name'));
 
             $borrow = new Borrow([
                 'user_id' => Auth::user()->id,
-                'borrowedby_id'=> $users->id,
-                'location_id' =>$request->location_id
+                'borrowedby_id' => $users->id,
+                'location_id' => $request->location_id
             ]);
-           
+
 
             if ($request->originalQuantity) {
                 foreach ($request->originalQuantity as $key => $value) {
@@ -86,7 +104,7 @@ class AdminEquipmentController extends Controller
 
                     $quantityBorrow = NonConsumable::create(['quantity' => $request->quantity[$key], 'item' => $request->borrows[$key], 'status' => 1]);
                     $itemid = $item->id;
-                    
+
                     $quantityBorrowId[] = $quantityBorrow->id;
 
                     if (!($request->originalQuantity[$key] - $request->quantity[$key] <= 0)) {
@@ -205,7 +223,6 @@ class AdminEquipmentController extends Controller
      */
     public function update(Request $request, $id)
     {
-//dd($request);
         $input = $request->all();
         if ($file = $request->file('photo_id')) {
             $name = time() . $file->getClientOriginalName();

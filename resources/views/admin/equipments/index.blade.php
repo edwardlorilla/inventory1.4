@@ -13,7 +13,6 @@
     <style>
 
 
-
         .example-modal .modal {
             position: relative;
             top: auto;
@@ -85,8 +84,6 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </div>
-
-
     <div class="modal fade example-modal" id="borrownon" role="dialog">
         <div class="modal">
             <div class="modal-dialog">
@@ -101,10 +98,14 @@
                         {!! Form::open(['id'=>'borrows_form', 'method'=>'post']) !!}
 
                         <div class="form-group has-feedback">
-                            {!! Form::label('name', 'Name') !!}
-                            {!! Form::select('name', $users, null,  ['class'=>'form-control'])!!}
+                            {!! Form::label('name', 'Name') !!}<br>
+                            {!! Form::select('name', $users, null,  ['class'=>'myselect'])!!}
                         </div>
+                        <div class="form-group">
+                            {!! Form::label('location_id', ucfirst('Department:')) !!}<br>
+                            {!! Form::select('location_id', $locations, null,  ['class'=>'myselect'])!!}
 
+                        </div>
 
                         <div class="form-group">
                             {{--{!! Form::hidden('items', '', ['class' => 'form-control', 'id' =>'itemArray']) !!}--}}
@@ -120,7 +121,6 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </div>
-
     <div class="modal fade example-modal" id="deleteModal">
         <div class="modal modal-danger">
             <div class="modal-dialog">
@@ -149,7 +149,33 @@
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
     </div><!-- /.example-modal -->
+    <div class="modal fade example-modal" id="checkin" role="dialog">
+        <div class="modal">
+            <div class="modal-dialog">
 
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><span class="inline-edit">Equipment Check-in</span></h4>
+                    </div>
+                    <div class="modal-body">
+                        {!! Form::open(['id'=>'borrows_form', 'method'=>'post']) !!}
+                        <div class="form-group">
+                            <div id="checkintable-container"></div>
+                            {!! Form::hidden('no', '', ['class' => 'form-control', 'id' =>'checkinequipment' ]) !!}
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                        {!! Form::submit('Check-in Item', ['class'=>'btn btn-success  ']) !!}
+                        {!! Form::close() !!}
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
 
 
 
@@ -180,11 +206,14 @@
 
 
                     <div class="box-body">
-                        <div id="grpChkBox" >
+                        <div id="grpChkBox">
                             <div class="btn-group" style="margin-bottom: 20px; ">
 
                                 <button name="sendNewSms" class="btn bg-olive btn-flat " id="sendNewSms" type="submit"
                                         onClick="ValidateCheckBox();">Consume
+                                </button>
+                                <button name="sendNewSms" class="btn bg-olive btn-flat " id="sendNewSms" type="submit"
+                                        onClick="checkin();">Check in
                                 </button>
                                 <a href="{{route('admin.equipment.create')}}" class="btn btn-primary btn-flat"><span
                                             class="glyphicon glyphicon-plus"></span> Create</a>
@@ -221,7 +250,7 @@
                         </div>
 
 
-                        <table  id="firm_table" class="table table-bordered table-striped table-fixed">
+                        <table id="firm_table" class="table table-bordered table-striped table-fixed">
                             <thead>
                             <tr>
                                 <th class="nosort"><input type="checkbox" id="checkAll"></th>
@@ -606,7 +635,7 @@
             var yyyy = tdate.getFullYear(); //yields year
             var d = dd + "-" + ( MM + 1) + "-" + yyyy;
             $('#firm_table').DataTable({
-                "scrollY":        "500px",
+                "scrollY": "500px",
                 "scrollCollapse": true,
                 "paging": false,
                 dom: 'Bfrtip',
@@ -780,17 +809,6 @@
         var selectedCheckBoxesValue = '';
 
         function ValidateCheckBox() {
-//                    $('#ValidateCheckBox').find("input:checkbox.CheckBoxClassName:checked").each(function (i, selected) {
-//                        if (selectedCheckBoxesValue.length == 0) {
-//                            selectedCheckBoxesValue += $(selected).val();
-//                        }
-//                        else {
-//                            selectedCheckBoxesValue += ',' + $(selected).val();
-//                        }
-//                    });
-//                    if (selectedCheckBoxesValue.length == 0) {
-//                        $("#error").modal();
-//                    } else {
             var list = document.getElementById("userquerytable-container");
             while (list.hasChildNodes()) {
                 list.removeChild(list.firstChild);
@@ -830,14 +848,69 @@
 
                 $('#userquerytable-container').append(table);
                 $('#userquerytable').DataTable({
-
+                    "order": [[ 0, "desc" ]],
                     "pagingType": "full_numbers"
                 });
             }
             $("#borrow").modal('show');
 //                    }
         }
+        function checkin() {
+            var chkArray = [];
+            var borrows = $("input[name='borrows[]']:checked");
+            var list = document.getElementById("checkintable-container");
+            while (list.hasChildNodes()) {
+                list.removeChild(list.firstChild);
+            }
 
+            var data;
+            borrows.map(function () {
+                chkArray.push([$(this).closest("tr").find("td:eq(5)").text(), $(this).closest("tr").find("td:eq(6)").text()]);
+                var colData = ["Item", "Quantity"];
+                data = {"Cols": colData, "Rows": chkArray};
+            }).get();
+            var table = $('<table/>').attr("id", "checkintable").addClass("display").attr("cellspacing", "0").attr("width", "100%");
+            var tr = $('<tr/>');
+            table.append('<thead>').children('thead').append(tr);
+            for (var i = 0; i < data.Cols.length; i++) {
+                tr.append('<th><span class="inline-edit">' + data.Cols[i] + '</span></th>');
+            }
+            for (var r = 0; r < data.Rows.length; r++) {
+                var tr = $('<tr/>');
+                table.append(tr);
+                for (var c = 0; c < data.Cols.length; c++) {
+                    if (c % 2 == 0) {
+                        tr.append('<td>' + data.Rows[r][c] + '</td>');
+                    } else {
+                        tr.append('<td><input type="number" min="1" max="' + data.Rows[r][c] + '" required="" name="checkin[]" id="checkin" value="1"></td><input type="hidden" name="checkinoriginalQuantity[]" id="checkinoriginalQuantity" value="' + data.Rows[r][c] + '" >');
+                    }
+                }
+            }
+
+
+            var checkArray = [];
+            borrows.map(function () {
+                checkArray.push(this.value);
+            }).get();
+            var selected;
+            selected = checkArray.join(',') + ",";
+            $('#checkinequipment').attr('value', selected);
+
+            if ($.fn.dataTable.isDataTable('#checkintable')) {
+                $('#checkintable').DataTable();
+            }
+            else {
+
+                $('#checkintable').DataTable().destroy();
+
+                $('#checkintable-container').append(table);
+                $('#checkintable').DataTable({
+                    "order": [[ 0, "desc" ]],
+                    "pagingType": "full_numbers"
+                });
+            }
+            $("#checkin").modal('show');
+        }
         function borrownon() {
             var list = document.getElementById("userquerytable-container");
             while (list.hasChildNodes()) {
@@ -852,23 +925,7 @@
             $('#itemArray').attr('value', chkArray);
             $("#borrownon").modal();
         }
-
         function deleteModal() {
-
-//                    $('#ValidateCheckBox').find("input:checkbox.CheckBoxClassName:checked").each(function (i, selected) {
-//                        if (selectedCheckBoxesValue.length == 0) {
-//                            selectedCheckBoxesValue += $(selected).val();
-//
-//                        }
-//                        else {
-//                            selectedCheckBoxesValue += ',' + $(selected).val();
-//                        }
-//                    });
-//                    if (selectedCheckBoxesValue.length == 0) {
-//
-//                        //  $('#sendNewSms').prop("disabled", !this.checked);
-//                        $("#error").modal();
-//                    } else {
             var chkArray = [];
             $("input[name='non[]']:checked").map(function () {
                 chkArray.push(this.value);
@@ -880,8 +937,6 @@
             selected = chkArray.join(',') + ",";
             $('#deleteExample').attr('value', selected);
             $('#deleteModal').modal();
-            //$('.method').attr('id', $(this).data('delete_form'));
-//                    }
         }
 
 

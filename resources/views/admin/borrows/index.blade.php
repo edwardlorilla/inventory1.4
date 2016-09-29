@@ -98,8 +98,7 @@
                         <th>Borrowed by</th>
                         <th>Email</th>
                         <th>Department</th>
-                        <th>Equipment borrowed</th>
-                        <th>Equipment Quantity</th>
+                        <th>Equipment - Quantity</th>
                         <th>Date/Time</th>
                     </tr>
                     </thead>
@@ -125,14 +124,9 @@
                                         <td><a href="#" class="button-email"
                                                title="{{$borrow->location_id}}">{{$borrow->location_id == 0 ? 'location not found' : $borrow->location->room }}</a></td>
 
-                                        <td>@foreach($borrow->nonconsumables as $nonconsumables)<span
-                                                    class="label label-default" id="{{$nonconsumables->id}}"
-                                                    value="{{$nonconsumables->name}}">{{$nonconsumables->name}}</span>@endforeach
+                                        <td>@foreach($borrow->equipments as $nonconsumables)<span class="label label-default" id="{{$nonconsumables->id}}" value="{{$nonconsumables->name}}">{{$nonconsumables->item}} - {{App\NonConsumable::findOrFail($nonconsumables->nonconsumable_id + 1)->quantity}}</span><br>@endforeach
                                         </td>
-                                        <td>@foreach($borrow->nonconsumables as $nonconsumables)<span
-                                                    class="label label-default" id="{{$nonconsumables->id}}"
-                                                    value="{{$nonconsumables->quantity}}">{{$nonconsumables->quantity}}</span>@endforeach
-                                        </td>
+
 
                                         <td>{{$borrow->created_at->toDayDateTimeString()}}</td>
                                     </tr>

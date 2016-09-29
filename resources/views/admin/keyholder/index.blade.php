@@ -111,6 +111,7 @@
                             <th class="nosort">ID</th>
                             <th>User</th>
                             <th>Quantity</th>
+                            <th>Department - Floor</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -123,21 +124,14 @@
                                     <td>{{$keyholder->id}}</td>
                                     <td><strong>{{$keyholder->user->name}}</strong></td>
                                     <td>{{$keyholder->quantity}}</td>
-
+                                    <td>@foreach($keyholder->locations as $locatio)<span
+                                            class="label label-default" id="{{$locatio->id}}"
+                                            value="{{$locatio->room}}">{{$locatio->room}} - {{$locatio->floor_located}}</span><br/>@endforeach</td>
                                     {{--<td><strong>{{$keyholder->location->room}}</strong></td>--}}
                                     {{--<td><strong>{{$keyholder->location->floor_located}}</strong></td>--}}
                                     {{--<td>{{$keyholder->updated_at->diffForHumans()}}</td>--}}
                                 </tr>
-                                <tr>
-                                    <td></td>
-                                    <td colspan="{{$keyholder->id}}">
-                                        <div id="collapse{{$keyholder->id}}" class="collapse out">
-                                            @foreach($keyholder->locations as $locatio)<span
-                                                    class="label label-default" id="{{$locatio->id}}"
-                                                    value="{{$locatio->room}}">{{$locatio->room}} - {{$locatio->floor_located}}</span><br/>@endforeach
-                                        </div>
-                                    </td>
-                                </tr>
+
                             @endforeach
                             {{--['user_id', 'quantity', 'location_id'--}}
                         @endif

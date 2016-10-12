@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Locations
+    Address
 @endsection
-@section('contentheader_title', 'All Locations')
+@section('contentheader_title', 'All Addresses')
 
 @section('css')
 
@@ -98,7 +98,7 @@
     <div class="col-md-6">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title">Locations</h3>
+                <h3 class="box-title">All Addresses</h3>
             </div><!-- /.box-header -->
             <div class="box-body">
                 <button name="sendNewSms" class="btn btn-danger btn-flat" type="submit" id="deleteButton"
@@ -110,20 +110,18 @@
                         <th class="nosort"><input type="checkbox" id="checkAll"></th>
                         <th class="nosort">ID</th>
                         <th>Name</th>
-                        <th>Location</th>
 
                     </tr>
                     </thead>
                     <tbody>
-                    @if($locations)
+                    @if($addresses)
 
-                        @foreach( $locations as $location)
+                        @foreach( $addresses as $address)
                             <tr>
                                 <td><input type="checkbox" id="checkbox" class="CheckBoxClassName" name="delete[]"
-                                           value="{{$location->id}}" form="delete_form"></td>
-                                <td>{{$location->id}}</td>
-                                <td><strong>{{$location->room}}</strong></td>
-                                <td><strong>{{$location->floor_located}}</strong></td>
+                                           value="{{$address->id}}" form="delete_form"></td>
+                                <td>{{$address->id}}</td>
+                                <td><strong>{{$address->name}}</strong></td>
                                 {{--<td>{{$category->updated_at->diffForHumans()}}</td>--}}
                             </tr>
                         @endforeach
@@ -139,18 +137,15 @@
     <div class="col-md-6">
         <div class="box box-info">
             <div class="box-header">
-                <h3 class="box-title">Create Location</h3>
+                <h3 class="box-title">Add Address</h3>
             </div><!-- /.box-header -->
             <div class="box-body">
-                {!! Form::open(['method'=>'POST', 'action'=>'AdminLocationController@store'] ) !!}
+                {!! Form::open(['method'=>'POST', 'action'=>'AdminAddressController@store'] ) !!}
                 <div class="form-group">
-                    {!! Form::label('room', ucfirst('room:')) !!}
-                    {!! Form::text('room', null, ['class'=>'form-control']) !!}
+                    {!! Form::label('name', ucfirst('name:')) !!}
+                    {!! Form::text('name', null, ['class'=>'form-control']) !!}
                 </div>
-                <div class="form-group">
-                    {!! Form::label('floor_located', ucfirst('floor Located:')) !!}
-                    {!! Form::text('floor_located', null, ['class'=>'form-control']) !!}
-                </div>
+
                 <div class="box-footer">
                     {!! Form::submit('Add Location ', ['class'=>'btn btn-info']) !!}
                 </div><!-- /.box-footer -->

@@ -22,7 +22,8 @@ Route::group(['middleware' => 'web'], function() {
     Route::auth();
     Route::get('/home', 'HomeController@index')->name('admin.home');
     Route::resource('admin/users', 'AdminUsersController');
-   
+    Route::resource('admin/address', 'AdminAddressController', ['only' => ['index', 'store', 'update']]);
+    Route::resource('admin/reservation','AdminReservationController');
     Route::get('admin/equipment', function() {
         return view('admin.equipment.index');
     });
@@ -37,6 +38,7 @@ Route::group(['middleware' => 'web'], function() {
     Route::resource('admin/keyholder','AdminKeyholderController');
     Route::resource('admin/location','AdminLocationController');
     Route::resource('admin/borrow','AdminBorrowController');
+    Route::resource('admin/propertyinventory','AdminPropertyinventoryController');
     Route::post('admin/borrows/{id?}', 'AdminBorrowController@store')->name('admin.borrows.store');
     Route::post('admin/equipment/{id?}', 'AdminEquipmentController@store')->name('admin.equipment.store');
 

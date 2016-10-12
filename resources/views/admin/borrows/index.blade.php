@@ -40,7 +40,6 @@
 
                 </div>
                 <div class="modal-body">
-                    {{--{!! Form::open(['id'=>'delete_form' , 'method'=>'POST',]) !!}--}}
 
                     <div id="userquerytable-container"></div>
 
@@ -51,9 +50,9 @@
                     {!! Form::submit('Send Email', ['class'=>'btn btn-primary']) !!}
                     {!! Form::close() !!}
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="return">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -73,9 +72,9 @@
                     {!! Form::submit('Return Item', ['class'=>'btn btn-primary']) !!}
                     {!! Form::close() !!}
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
 
 
     <div class="nav-tabs-custom">
@@ -87,11 +86,11 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
+
                 <table id="firm_table" class="table table-bordered table-striped">
                     <thead>
                     <tr>
 
-                        {{--<th class="nosort"><input type="checkbox" id="checkAll"></th>--}}
 
                         <th class="nosort">ID</th>
                         <th>Approved by</th>
@@ -106,33 +105,34 @@
                     @if($borrows)
 
                         @foreach( $borrows as $borrow)
+                            @if($borrow->status ==  1)
 
-                            @if(($borrow->nonconsumable))
-                                @if($borrow->nonconsumable->quantity)
-                                    <tr>
-                                        {{--<td class="details-control"></td>--}}
-                                        {{--<td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]"--}}
-                                        {{--value="{{$borrow->id}}" form="delete_form"></td>--}}
+                                <tr>
 
-                                        <td>{{$borrow->id}}</td>
-                                        <td>{{$borrow->user->name}}</td>
-                                        <td><a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a></td>
-                                        {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
+                                    <td>{{$borrow->id}}</td>
+                                    <td>{{$borrow->user->name}}</td>
+                                    <td>
+                                        <a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a>
+                                    </td>
 
-                                        <td><a href="#" class="button-email"
-                                               title="{{$borrow->user->email}}">{{$borrow->borrowedby->email}}</a></td>
-                                        <td><a href="#" class="button-email"
-                                               title="{{$borrow->location_id}}">{{$borrow->location_id == 0 ? 'location not found' : $borrow->location->room }}</a></td>
+                                    <td><a href="#" class="button-email"
+                                           title="{{$borrow->user->email}}">{{$borrow->borrowedby->email}}</a></td>
+                                    <td><a href="#" class="button-email"
+                                           title="{{$borrow->location_id}}">{{$borrow->location_id == 0 ? 'location not found' : $borrow->location->room }}</a>
+                                    </td>
 
-                                        <td>@foreach($borrow->equipments as $nonconsumables)<span class="label label-default" id="{{$nonconsumables->id}}" value="{{$nonconsumables->name}}">{{$nonconsumables->item}} - {{App\NonConsumable::findOrFail($nonconsumables->nonconsumable_id + 1)->quantity}}</span><br>@endforeach
-                                        </td>
+                                    <td>@foreach($borrow->equipments as $nonconsumables)<span
+                                                class="label label-default" id="{{$nonconsumables->id}}"
+                                                value="{{$nonconsumables->name}}">{{$nonconsumables->item}}
+                                            - {{$nonconsumables->stockin->deduction}} </span>
+                                        <br>@endforeach
+                                    </td>
 
 
-                                        <td>{{$borrow->created_at->toDayDateTimeString()}}</td>
-                                    </tr>
-                                @endif
+                                    <td>{{$borrow->created_at->toDayDateTimeString()}}</td>
+                                </tr>
+
                             @endif
-
 
                         @endforeach
 
@@ -143,7 +143,7 @@
                 </table>
 
 
-            </div><!-- /.tab-pane -->
+            </div>
             <div class="tab-pane" id="tab_2">
                 <div class="btn-group" style="margin-bottom: 20px;">
                     <button name="sendNewSms" class="btn btn-primary btn-flat    " id="sendNewSms"
@@ -169,27 +169,31 @@
                     <tbody>
                     @if($borrows)
                         @foreach( $borrows as $borrow)
-                            @if($borrow->nonconsumable_id == 0)
-                                <tr>
-                                    <td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName" name="return[]" value="{{$borrow->id}}" form="return_form"></td>
-                                    <td>{{$borrow->id}}</td>
-                                    <td>{{$borrow->user->name}}</td>
-                                    {{--<td class="quantity">{{$borrow->nonconsumable->quantity}}</td>--}}
-                                    <td><a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a></td>
+                            @if($borrow->status == 0 )
+                                    <tr>
+                                        <td><input type="checkbox" id="checkbox" class="checkboxs CheckBoxClassName"
+                                                   name="return[]" value="{{$borrow->id}}" form="return_form"></td>
+                                        <td>{{$borrow->id}}</td>
+                                        <td>{{$borrow->user->name}}</td>
+                                        <td>
+                                            <a href="{{route('admin.users.edit', $borrow->borrowedby_id)}}">{{$borrow->borrowedby_id == 0 ? 'no user' :$borrow->borrowedby->name}}</a>
+                                        </td>
 
-                                    <td><a href="#" class="button-email"
-                                           title="{{$borrow->user->email}}">{{$borrow->user->email}}</a></td>
-
-
-                                    <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)<span
-                                                class="label label-default"
-                                                value="{{$equipment->id}}">{{$equipment->item}}</span> ,@endforeach
-                                    </td>
+                                        <td><a href="#" class="button-email"
+                                               title="{{$borrow->user->email}}">{{$borrow->user->email}}</a></td>
 
 
-                                    <td>{{$borrow->updated_at->toDayDateTimeString()}}</td>
-                                </tr>
-                            @endif
+                                        <td data-parent="{{$borrow->id}}">@foreach($borrow->equipments as $equipment)
+                                                <span
+                                                        class="label label-default"
+                                                        value="{{$equipment->id}}">{{$equipment->item}}</span>
+                                                ,@endforeach
+                                        </td>
+
+
+                                        <td>{{$borrow->updated_at->toDayDateTimeString()}}</td>
+                                    </tr>
+                                @endif
 
                         @endforeach
 
@@ -198,10 +202,10 @@
                     <tfoot>
                     </tfoot>
                 </table>
-            </div><!-- /.tab-pane -->
+            </div>
 
-        </div><!-- /.tab-content -->
-    </div><!-- nav-tabs-custom -->
+        </div>
+    </div>
 
 
 @endsection
@@ -227,18 +231,10 @@
             });
         </script>
     @endif
-    <!--End Script Open Pannel--->
+
     <script>
-        $('table').tableCheckbox({/* options */});
-        //        function exportTo(type) {
-        //
-        //            $('.table').tableExport({
-        //                filename: 'table_%DD%-%MM%-%YY%',
-        //                format: type,
-        //                cols: '3,4,5,6'
-        //            });
-        //
-        //        }
+        $('table').tableCheckbox({});
+
 
         $('.button-email').click(function (e) {
             var list = document.getElementById("userquerytable-container");
@@ -271,11 +267,8 @@
 
         }
 
-        {{--{{json_encode($borrow->nonconsumables()->getRelatedIds())}}--}}
-        {{--{{json_encode($borrow->equipments()->getRelatedIds())}}--}}
 
-
-$(function () {
+        $(function () {
 
             $('#firm_table').DataTable({
                 "paging": false,

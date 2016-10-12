@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Equipment;
+use App\Http\Requests\AdminCategoriesRequest;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -41,8 +42,9 @@ class AdminCategoriesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AdminCategoriesRequest $request)
     {
+
         Category::create($request->all());
         return redirect(route('admin.categories.index'));
     }

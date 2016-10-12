@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Address;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Photo;
@@ -23,11 +24,12 @@ class AdminUsersController extends Controller
     {
         $this->middleware('auth');
     }
+
     public function index()
     {
-       
-$users = User::all();
-        return view('admin.users.index',compact('users'));
+
+        $users = User::all();
+        return view('admin.users.index', compact('users'));
     }
 
 
@@ -38,31 +40,32 @@ $users = User::all();
      */
     public function create(User $user)
     {
-        $roles=Role::lists('name', 'id')->all();
-        return view('admin.users.create', compact('roles'));
+        $roles = Role::lists('name', 'id')->all();
+        $addresses = Address::lists('name', 'id')->all();
+        return view('admin.users.create', compact('roles', 'addresses'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(CreateUserRequest $request)
     {
 //        dd($request);
-        
+
         $input = $request->all();
-        if (trim($request->password)==''){
+        if (trim($request->password) == '') {
             $input = $request->except('password');
-        }else{
+        } else {
             $input = $request->all();
         }
 
-        if ($file = $request->file('photo_id')){
+        if ($file = $request->file('photo_id')) {
             $name = time() . $file->getClientOriginalName();
-            $file ->move('images', $name);
-            $photo = Photo::create(['file'=>$name]);
+            $file->move('images', $name);
+            $photo = Photo::create(['file' => $name]);
             $input['photo_id'] = $photo->id;
         }
         $input['password'] = bcrypt($request->password);
@@ -73,7 +76,7 @@ $users = User::all();
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -84,7 +87,7 @@ $users = User::all();
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -97,19 +100,19 @@ $users = User::all();
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateUserRequest $request, $id)
     {
         $user = User::findOrFail($id);
-        if (trim($request->password)==''){
+        if (trim($request->password) == '') {
             $input = $request->except('password');
-        }else{
+        } else {
             $input = $request->all();
         }
-        if ($file = $request->file('photo_id')){
+        if ($file = $request->file('photo_id')) {
             $name = time() . $file->getClientOriginalName();
             $file->move('images', $name);
             $photo = Photo::create(['file' => $name]);
@@ -123,21 +126,20 @@ $users = User::all();
     /**
      * Remove the specified resource f'admin.users.index'rom storage.
      *
-     * @param  int  $id'admin.users.index'
+     * @param  int $id 'admin.users.index'
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        if (!(empty($user->photo->file))){
-            unlink(public_path().  $user->photo->file);
+        if (!(empty($user->photo->file))) {
+            unlink(public_path() . $user->photo->file);
         }
 
-        $user ->delete();
+        $user->delete();
         Session::flash('Do you want to delete?', 'The user has been deleted');
         return redirect()->route('admin.users.index');
     }
-   
 
 
 }

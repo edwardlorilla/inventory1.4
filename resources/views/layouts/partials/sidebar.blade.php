@@ -98,7 +98,10 @@
             </li>
 
             <li class="{{active('admin.location.index')}}"><a href="{{URL::route('admin.location.index')}}"><i
-                            class='fa fa-map-marker'></i> <span>Location</span></a></li>
+                            class='fa fa-map-marker'></i> <span>Location</span></a>
+
+            <li class="{{active('admin.address.index')}}"><a href="{{URL::route('admin.address.index')}}"><i
+                            class='fa fa-map-marker'></i> <span>Address</span></a></li>
 
         </ul><!-- /.sidebar-menu -->
     </section>

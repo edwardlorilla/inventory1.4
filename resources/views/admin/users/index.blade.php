@@ -43,11 +43,11 @@
                             <tr>
                                 <th scope="row">{{$user->id}}</th>
                                 <th><img height="50px"
-                                         src="{{$user->photo? $user->photo->file:'http://lorempixel.com/50/50'}}"
+                                         src="{{$user->photo? $user->photo->file:'/images/userayumi.png'}}"
                                          alt="">
                                 </th>
                                 <td><a href="{{route('admin.users.edit', $user->id)}}">{{$user->name}}
-                                <td>{{$user->role_id == 0 ? 'No Role' : $user->role->name }}</td>
+                                <td>{{$user->role ?  $user->role->name :'No Role' }}</td>
                                 <td>{{$user->is_active == 1 ? 'Active' : 'Not Active' }}</td>
 
                                 <td>{{$user->email}}</td>

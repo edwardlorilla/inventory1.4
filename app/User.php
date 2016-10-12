@@ -15,7 +15,7 @@ class User extends Authenticatable
      */
   
     protected $fillable = [
-        'name', 'email', 'password','role_id','photo_id', 'is_active',
+        'name', 'email', 'password','role_id','photo_id', 'is_active','contact_number', 'address_id'
     ];
     protected $dates = ['last_login_at'];
     /**
@@ -31,6 +31,9 @@ class User extends Authenticatable
 
     public function role(){
         return $this->belongsTo('App\Role');
+    }
+    public function address(){
+        return $this->belongsTo('App\Address');
     }
 
     public function photo(){

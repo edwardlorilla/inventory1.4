@@ -50,7 +50,7 @@ class AdminBorrowController extends Controller
         foreach ($request->return as $id) {
             $borrow = Borrow::find($id);
             foreach ($borrow->equipments as $equipment) {
-                Equipment::where('id', $equipment->id)->update(['status' => 1, 'consumable' => 1, 'outOfStock' => 0, 'nonconsumable_id' => null]);
+                Equipment::where('id', $equipment->id)->update(['status' => 1, 'consumable' => 0, 'outOfStock' => 0, 'nonconsumable_id' => null, 'hasBorrow' => 0]);
             }
 
             Borrow::destroy($request->return);

@@ -24,7 +24,25 @@
             </div>
             <div class="form-group">
                 {!! Form::label('category_id', ucfirst('Categories:')) !!}
-                {!! Form::select('category_id',['' => 'Choose categories']+ $categories,null, ['class'=>'form-control myselect', 'required' => '' ])!!}
+                <div class="input-group input-group-md">
+                    {!! Form::select('category_id',['' => 'Choose categories'] + $categories,null, ['class'=>'form-control myselect', 'required' => ''])!!}
+                    <span class="input-group-btn">
+                      <button id="add-group-btn" class="btn btn-success btn-block" type="button">Add Category</button>
+                    </span>
+
+                </div>
+            </div>
+
+            <div class="form-group" id="add-new-group">
+
+                <div class="input-group">
+                    <input placeholder="Add Category" type="text" name="new_group" id="new_group" class="form-control">
+                          <span class="input-group-btn">
+                            <a href="#" id="add-new-btn" class="btn btn-success">
+                              <i class="glyphicon glyphicon-ok"></i>
+                            </a>
+                          </span>
+                </div>
             </div>
             <div class="form-group">
                 {!! Form::label('description', ucfirst('body:')) !!}
@@ -42,7 +60,8 @@
 
 
             {{--['item', 'description','status','category_id', 'photo_id'];--}}
-
+        {!! Form::hidden('consumable', 0, ['id' => 'id']) !!}
+            {!! Form::hidden('hasBorrow', 0, ['id' => 'id']) !!}
         </div><!-- /.box-body -->
         @include('partial.error')
         <div class="box-footer">
@@ -59,7 +78,40 @@
     {!! Html::script('js/parsley.min.js') !!}
     {!! Html::style('plugins/select2/select2.min.css') !!}
     {!! Html::script('plugins/select2/select2.full.js') !!}
-    <script>$(".myselect").select2();</script>
+    <script>
+        $("#add-new-group").hide();
+        $('#add-group-btn').click(function () {
+            $("#add-new-group").slideToggle(function () {
+                $('#new_group').focus();
+            });
+            return false;
+        });
+        $('#add-new-btn').click(function () {
+            var newGroup = $('#new_group');
+            $.ajax({
+                url: "{{route("admin.categories.store")}}",
+                method: 'post',
+                data: {
+                    name: $("#new_group").val(),
+                    _token: $("input[name=_token]").val()
+                },
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (xhr) {
+                    var errors = xhr.responseJSON;
+                    var error = errors.name[0];
+                    if (error) {
+                        var inputGroup = newGroup.closest('.input-group');
+                        inputGroup.next('.text-danger').remove();
+                        inputGroup.addClass('has-error').after('<p class="text-danger">' + error + '</p>');
+                    }
+                }
+            });
+        });
+        $(".myselect").select2();
+
+    </script>
 @endsection
 
 {{--'name', 'email', 'password','category_id','photo_id', 'is_active',--}}

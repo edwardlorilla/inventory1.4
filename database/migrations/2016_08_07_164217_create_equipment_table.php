@@ -17,13 +17,15 @@ class CreateEquipmentTable extends Migration
             $table->integer('user_id')->unsigned()->index();
             $table->integer('category_id')->unsigned()->index();
             $table->integer('photo_id')->unsigned()->index();
+            $table->integer('reservation_id')->unsigned()->index();
+            $table->integer('stockin_id')->unsigned()->index();
             $table->string('item');
             $table->text('description');
-            $table->boolean('status');
+            $table->integer('status');
             $table->boolean('consumable');
             $table->boolean('outOfStock');
             $table->boolean('hasQuantity');
-            
+            $table->boolean('hasReservation');
             $table->timestamps();
         });
     }

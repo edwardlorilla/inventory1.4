@@ -3,7 +3,7 @@
 @section('htmlheader_title')
     Locations
 @endsection
-@section('contentheader_title', 'All Locations')
+@section('contentheader_title', 'All property inventory')
 
 @section('css')
 
@@ -95,70 +95,72 @@
     </div><!-- /.example-modal -->
     @include('partial.message')
     <div class="row">
-    <div class="col-md-6">
-        <div class="box box-primary">
-            <div class="box-header">
-                <h3 class="box-title">Locations</h3>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                <button name="sendNewSms" class="btn btn-danger btn-flat" type="submit" id="deleteButton"
-                        onClick="deleteModal();" disabled>Delete
-                </button>
-                <table id="grpChkBox" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th class="nosort"><input type="checkbox" id="checkAll"></th>
-                        <th class="nosort">ID</th>
-                        <th>Name</th>
-                        <th>Location</th>
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Property Inventory</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <button name="sendNewSms" class="btn btn-danger btn-flat" type="submit" id="deleteButton"
+                            onClick="deleteModal();" disabled>Delete
+                    </button>
+                    <table id="grpChkBox" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th class="nosort"><input type="checkbox" id="checkAll"></th>
+                            <th class="nosort">ID</th>
+                            <th>Name</th>
+                            <th>Location</th>
 
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @if($locations)
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if($propertyinventories)
 
-                        @foreach( $locations as $location)
-                            <tr>
-                                <td><input type="checkbox" id="checkbox" class="CheckBoxClassName" name="delete[]"
-                                           value="{{$location->id}}" form="delete_form"></td>
-                                <td>{{$location->id}}</td>
-                                <td><strong>{{$location->room}}</strong></td>
-                                <td><strong>{{$location->floor_located}}</strong></td>
-                                {{--<td>{{$category->updated_at->diffForHumans()}}</td>--}}
-                            </tr>
-                        @endforeach
+                            @foreach( $propertyinventories as $propertyinventory)
+                                <tr>
+                                    <td><input type="checkbox" id="checkbox" class="CheckBoxClassName" name="delete[]"
+                                               value="{{$propertyinventory->id}}" form="delete_form"></td>
+                                    <td>{{$propertyinventory->id}}</td>
+                                    <td><strong>{{$propertyinventory->equipment->item}}</strong></td>
+                                    <td><strong>{{$propertyinventory->location->room}}</strong></td>
+                                    {{--<td>{{$category->updated_at->diffForHumans()}}</td>--}}
+                                </tr>
+                            @endforeach
 
-                    @endif
-                    </tbody>
-                    <tfoot>
-                    </tfoot>
-                </table>
-            </div><!-- /.box-body -->
-        </div><!-- /.box -->
-    </div>
-    <div class="col-md-6">
-        <div class="box box-info">
-            <div class="box-header">
-                <h3 class="box-title">Create Location</h3>
-            </div><!-- /.box-header -->
-            <div class="box-body">
-                {!! Form::open(['method'=>'POST', 'action'=>'AdminLocationController@store'] ) !!}
-                <div class="form-group">
-                    {!! Form::label('room', ucfirst('room:')) !!}
-                    {!! Form::text('room', null, ['class'=>'form-control']) !!}
-                </div>
-                <div class="form-group">
-                    {!! Form::label('floor_located', ucfirst('floor Located:')) !!}
-                    {!! Form::text('floor_located', null, ['class'=>'form-control']) !!}
-                </div>
-                <div class="box-footer">
-                    {!! Form::submit('Add Location ', ['class'=>'btn btn-info']) !!}
-                </div><!-- /.box-footer -->
+                        @endif
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
+        <div class="col-md-6">
+            <div class="box box-info">
+                <div class="box-header">
+                    <h3 class="box-title">Create Property Inventory</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    {!! Form::open(['method'=>'POST', 'action'=>'AdminPropertyinventoryController@store'] ) !!}
+                    <div class="form-group">
+                        {!! Form::label('equipment_id', ucfirst('equipment:')) !!}
+                        {!! Form::select('equipment_id',['' => 'Choose categories'] + $equipments,null, ['class'=>'form-control myselect', 'required' => ''])!!}
 
-                {!! Form::close() !!}
-            </div><!-- /.box-body -->
-        </div><!-- /.box -->
-    </div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('location_id', ucfirst('location:')) !!}
+                        {!! Form::select('location_id',['' => 'Choose categories'] + $locations,null, ['class'=>'form-control myselect', 'required' => ''])!!}
+
+                    </div>
+                    <div class="box-footer">
+                        {!! Form::submit('Add Property Inventory ', ['class'=>'btn btn-info']) !!}
+                    </div><!-- /.box-footer -->
+
+                    {!! Form::close() !!}
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div>
     </div>
 
 
@@ -170,7 +172,9 @@
     {!! Html::script('js/tableExporter.js') !!}
     {!! Html::script('js/jquery.slimscroll.min.js') !!}
     {!! Html::script('plugins/fastclick/fastclick.min.js') !!}
-
+    {!! Html::style('plugins/select2/select2.min.css') !!}
+    {!! Html::script('plugins/select2/select2.full.js') !!}
+    <script>$(".myselect").select2();</script>
     <script>
         $('table').tableCheckbox({/* options */});
         $(function () {
